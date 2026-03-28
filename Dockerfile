@@ -1,16 +1,18 @@
 FROM golang:1.21-alpine AS builder
 
-ENV GOSUMDB=off
-
 WORKDIR /app
 
 RUN apk add --no-cache git ca-certificates
 
 COPY go.mod ./
-RUN go mod download
+
+# Create go.sum with correct checksums
+RUN go mod tidy
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hr-system ./cmd/main.go
+
+# Build from module root
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hr-system .
 
 FROM alpine:3.19
 
