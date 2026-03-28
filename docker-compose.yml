@@ -57,6 +57,7 @@ services:
     environment:
       - BASE_URL=http://app:8080
       - REPORT_DIR=/app/test-results
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     depends_on:
       app:
         condition: service_healthy
@@ -73,6 +74,7 @@ services:
         git config --global --add safe.directory /app &&
         git config --global user.email 'test@holding-hr.local' &&
         git config --global user.name 'Test Runner' &&
+        git remote set-url origin https://$${GITHUB_TOKEN}@github.com/Zam83-AZE/holding-hr-system.git &&
         git add test-results/ &&
         git diff --staged --quiet || (git commit -m 'Test results' && git push origin main) &&
         echo 'Done!'
