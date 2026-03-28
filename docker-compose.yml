@@ -57,6 +57,7 @@ services:
     environment:
       - BASE_URL=http://app:8080
       - REPORT_DIR=/app/test-results
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
     depends_on:
       app:
         condition: service_healthy
@@ -74,7 +75,7 @@ services:
         git config --global user.email 'test@holding-hr.local' &&
         git config --global user.name 'Test Runner' &&
         git add test-results/ &&
-        git diff --staged --quiet || (git commit -m 'Test results - $(date +%Y-%m-%d_%H-%M-%S)' && git push origin main) &&
+        git diff --staged --quiet || (git commit -m 'Test results - $(date +%Y-%m-%d_%H-%M-%S)' && git push https://$${GITHUB_TOKEN}@github.com/Zam83-AZE/holding-hr-system.git main) &&
         echo 'Done!'
       "
     networks:
