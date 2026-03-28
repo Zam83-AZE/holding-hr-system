@@ -48,3 +48,6 @@ Thumbs.db
 download/
 holding-hr-system/
 *.zip
+
+# Scripts with secrets
+scripts/git_push.sh
