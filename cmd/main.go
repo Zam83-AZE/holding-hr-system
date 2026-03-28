@@ -346,6 +346,10 @@ func runMigrations(db *sql.DB) error {
         safeAddColumn(db, "employees", "work_location_id", "INT NULL AFTER position_id")
         safeAddColumn(db, "employees", "uniform_size", "VARCHAR(20) NULL AFTER work_location_id")
 
+        // companies cədvəlinə hiyerarşiya column-ları əlavə et (MariaDB uyğun)
+        safeAddColumn(db, "companies", "parent_id", "INT NULL AFTER name")
+        safeAddColumn(db, "companies", "company_type", "VARCHAR(50) DEFAULT 'OTHER' AFTER parent_id")
+
         // Migrasiya fayllarını oxu
         migrationsDir := "migrations"
         if _, err := os.Stat(migrationsDir); os.IsNotExist(err) {

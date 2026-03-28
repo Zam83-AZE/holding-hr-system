@@ -1,6 +1,7 @@
 package handler
 
 import (
+        "fmt"
         "html/template"
         "holding-hr-system/internal/middleware"
         "holding-hr-system/internal/models"
@@ -34,29 +35,38 @@ func NewCompanyHandler(
 func (h *CompanyHandler) ShowStructure(w http.ResponseWriter, r *http.Request) {
         user := middleware.GetCurrentUser(r)
 
-        companies, _ := h.companyRepo.GetAll()
+        companies, _ := h.companyRepo.GetTopLevel()
 
-        // İlk şirkətin məlumatlarını gətir
+        // URL-dən company_id yoxla
         var selectedCompanyID int
         var departments []models.Department
         var positions []models.Position
 
-        if len(companies) > 0 {
+        if urlCID := r.URL.Query().Get("company_id"); urlCID != "" {
+                if cid, err := strconv.Atoi(urlCID); err == nil && cid > 0 {
+                        selectedCompanyID = cid
+                }
+        }
+
+        if selectedCompanyID == 0 {
                 if user.CompanyID != nil {
                         selectedCompanyID = *user.CompanyID
-                } else {
+                } else if len(companies) > 0 {
                         selectedCompanyID = companies[0].ID
                 }
+        }
+
+        if selectedCompanyID > 0 {
                 departments, _ = h.deptRepo.GetByCompanyID(selectedCompanyID)
                 positions, _ = h.posRepo.GetByCompanyID(selectedCompanyID)
         }
 
         data := PageData{
-                Title:       "Struktur",
-                User:        user,
-                Companies:   companies,
-                Departments: departments,
-                Positions:   positions,
+                Title:          "Struktur",
+                User:           user,
+                Companies:      companies,
+                Departments:    departments,
+                Positions:      positions,
                 SelectedCompany: selectedCompanyID,
         }
 
@@ -70,21 +80,15 @@ func (h *CompanyHandler) ShowCompanyStructure(w http.ResponseWriter, r *http.Req
 
         // İcazə yoxla
         if !middleware.CanAccessCompany(user, companyID) {
-                http.Error(w, "Səlahiyyətsiz", http.StatusForbidden)
+                w.WriteHeader(http.StatusForbidden)
                 return
         }
 
         departments, _ := h.deptRepo.GetByCompanyID(companyID)
         positions, _ := h.posRepo.GetByCompanyID(companyID)
 
-        data := PageData{
-                User:        user,
-                Departments: departments,
-                Positions:   positions,
-                SelectedCompany: companyID,
-        }
-
-        h.templates.ExecuteTemplate(w, "structure_list", data)
+        w.Header().Set("Content-Type", "application/json")
+        fmt.Fprintf(w, `{"departments":%d,"positions":%d}`, len(departments), len(positions))
 }
 
 // CreateDepartment - Departament yarat
@@ -147,10 +151,8 @@ func (h *CompanyHandler) DeleteDepartment(w http.ResponseWriter, r *http.Request
         }
 
         id, _ := strconv.Atoi(r.FormValue("id"))
-        companyID := r.FormValue("company_id")
-
         h.deptRepo.Delete(id)
-        http.Redirect(w, r, "/structure?company_id="+companyID, http.StatusSeeOther)
+        http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }
 
 // DeletePosition - Vəzifə sil
@@ -163,10 +165,8 @@ func (h *CompanyHandler) DeletePosition(w http.ResponseWriter, r *http.Request) 
         }
 
         id, _ := strconv.Atoi(r.FormValue("id"))
-        companyID := r.FormValue("company_id")
-
         h.posRepo.Delete(id)
-        http.Redirect(w, r, "/structure?company_id="+companyID, http.StatusSeeOther)
+        http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }
 
 // ShowSettings - Ayarlar səhifəsi

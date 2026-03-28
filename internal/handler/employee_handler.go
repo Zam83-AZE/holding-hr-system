@@ -186,16 +186,17 @@ func (h *EmployeeHandler) ShowEmployeeCard(w http.ResponseWriter, r *http.Reques
         positions, _ := h.posRepo.GetByCompanyID(employee.CompanyID)
 
         data := PageData{
-                Title:       "İşçi Kartoçkası",
-                User:        user,
-                Employee:    employee,
-                Education:   education,
-                Experience:  experience,
-                Family:      family,
-                Lifecycle:   lifecycle,
-                Certificates: certificates,
-                Departments: departments,
-                Positions:   positions,
+                Title:            "İşçi Kartoçkası",
+                User:             user,
+                Employee:         employee,
+                Education:        education,
+                Experience:       experience,
+                Family:           family,
+                Lifecycle:        lifecycle,
+                Certificates:     certificates,
+                Departments:      departments,
+                Positions:        positions,
+                SelectedCompany:  employee.CompanyID,
         }
 
         h.templates.ExecuteTemplate(w, "employee_card.html", data)
@@ -421,7 +422,11 @@ func (h *EmployeeHandler) TerminateEmployee(w http.ResponseWriter, r *http.Reque
         user := middleware.GetCurrentUser(r)
 
         id, _ := strconv.Atoi(r.FormValue("id"))
-        employee, _ := h.employeeRepo.GetByID(id)
+        employee, err := h.employeeRepo.GetByID(id)
+        if err != nil || employee == nil {
+                http.Error(w, "İşçi tapılmadı", http.StatusNotFound)
+                return
+        }
 
         if !middleware.CanAccessCompany(user, employee.CompanyID) {
                 http.Error(w, "Səlahiyyətsiz", http.StatusForbidden)
@@ -457,7 +462,11 @@ func (h *EmployeeHandler) ReactivateEmployee(w http.ResponseWriter, r *http.Requ
         user := middleware.GetCurrentUser(r)
 
         id, _ := strconv.Atoi(r.FormValue("id"))
-        employee, _ := h.employeeRepo.GetByID(id)
+        employee, err := h.employeeRepo.GetByID(id)
+        if err != nil || employee == nil {
+                http.Error(w, "İşçi tapılmadı", http.StatusNotFound)
+                return
+        }
 
         if !middleware.CanAccessCompany(user, employee.CompanyID) {
                 http.Error(w, "Səlahiyyətsiz", http.StatusForbidden)
@@ -504,6 +513,7 @@ func (h *EmployeeHandler) SearchEmployees(w http.ResponseWriter, r *http.Request
                 Title:     "Axtarış Nəticələri",
                 User:      user,
                 Employees: employees,
+                Companies: h.companyRepo.GetCompaniesOrEmpty(),
                 Query:     query,
         }
 
