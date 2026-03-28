@@ -22,6 +22,7 @@ RUN apk --no-cache add ca-certificates tzdata curl
 COPY --from=builder /hr-system /app/hr-system
 COPY templates /app/templates
 COPY static /app/static
+COPY migrations /app/migrations
 
 RUN mkdir -p /app/static/uploads
 

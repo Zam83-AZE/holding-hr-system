@@ -1,12 +1,12 @@
 -- Seed Data - Azman Holding System
--- Demo məlumatları
+-- Demo məlumatları (idempotent - INSERT IGNORE)
 
 SET NAMES utf8mb4;
 
 -- --------------------------------------------------------
 -- Şirkətlər
 -- --------------------------------------------------------
-INSERT INTO companies (name, is_holding, tax_id, address) VALUES
+INSERT IGNORE INTO companies (name, is_holding, tax_id, address) VALUES
 ('Azman Holding', TRUE, '1701234567', 'Səbail r., Hacıbabayevlər küçəsi 4, Bakı, Azərbaycan'),
 ('Azman Construction', FALSE, '1702345678', 'Baku, Azerbaijan - 16 il təcrübə, ictimai bina və parkların tikintisi'),
 ('TEZ Logistics', FALSE, '1703456789', 'Baku, Azerbaijan'),
@@ -19,7 +19,7 @@ INSERT INTO companies (name, is_holding, tax_id, address) VALUES
 -- --------------------------------------------------------
 -- Departamentlər
 -- --------------------------------------------------------
-INSERT INTO departments (company_id, name) VALUES
+INSERT IGNORE INTO departments (company_id, name) VALUES
 -- Azman Construction (2)
 (2, 'İnzibati'), (2, 'Tikinti'), (2, 'Layihələndirmə'), (2, 'Təhlükəsizlik'), (2, 'Satınalma'), (2, 'Mühasibat'), (2, 'HR'),
 -- TEZ Logistics (3)
@@ -38,7 +38,7 @@ INSERT INTO departments (company_id, name) VALUES
 -- --------------------------------------------------------
 -- Vəzifələr
 -- --------------------------------------------------------
-INSERT INTO positions (company_id, name) VALUES
+INSERT IGNORE INTO positions (company_id, name) VALUES
 -- Azman Construction (2)
 (2, 'Layihə Meneceri'), (2, 'Tikinti Mühəndisi'), (2, 'Memar'), (2, 'Kənd Təsərrüfatı İşçisi'), (2, 'Təhlükəsizlik Mütəxəssisi'), (2, 'Mühasib'), (2, 'HR Meneceri'),
 -- TEZ Logistics (3)
@@ -57,7 +57,7 @@ INSERT INTO positions (company_id, name) VALUES
 -- --------------------------------------------------------
 -- Demo işçilər (14 nəfər)
 -- --------------------------------------------------------
-INSERT INTO employees (company_id, first_name, last_name, father_name, fin_code, birth_date, gender, phone, email, address, status, department_id, position_id, hire_date) VALUES
+INSERT IGNORE INTO employees (company_id, first_name, last_name, father_name, fin_code, birth_date, gender, phone, email, address, status, department_id, position_id, hire_date) VALUES
 -- Azman Construction - Cari işçilər (dept IDs 1-7, pos IDs 8-14)
 (2, 'Elçin', 'Məmmədov', 'Samir', 'A1B2C3D', '1985-03-15', 'MALE', '+994501234567', 'elcin.mammedov@azmanconstruction.az', 'Baku, Nəsimi r.', 'ACTIVE', 1, 8, '2020-01-15'),
 (2, 'Aygün', 'Həsənova', 'Rəşid', 'B2C3D4E', '1990-07-22', 'FEMALE', '+994502345678', 'aygun.hasanova@azmanconstruction.az', 'Baku, Yasamal r.', 'ACTIVE', 6, 13, '2021-03-01'),
@@ -85,7 +85,7 @@ INSERT INTO employees (company_id, first_name, last_name, father_name, fin_code,
 -- --------------------------------------------------------
 -- Demo təhsil məlumatları
 -- --------------------------------------------------------
-INSERT INTO employee_education (employee_id, institution, specialty, degree, start_year, end_year, diploma_number) VALUES
+INSERT IGNORE INTO employee_education (employee_id, institution, specialty, degree, start_year, end_year, diploma_number) VALUES
 (1, 'BDU', 'İqtisadiyyat', 'BACHELOR', 2003, 2007, 'BDU-2007-001'),
 (1, 'ADİU', 'MBA', 'MASTER', 2008, 2010, 'ADİU-2010-045'),
 (2, 'UNEC', 'Mühasibat uçotu', 'BACHELOR', 2007, 2011, 'UNEC-2011-234'),
@@ -97,7 +97,7 @@ INSERT INTO employee_education (employee_id, institution, specialty, degree, sta
 -- --------------------------------------------------------
 -- Demo iş təcrübəsi
 -- --------------------------------------------------------
-INSERT INTO employee_experience (employee_id, company_name, position, start_date, end_date, leaving_reason) VALUES
+INSERT IGNORE INTO employee_experience (employee_id, company_name, position, start_date, end_date, leaving_reason) VALUES
 (1, 'Xəzər İstehsalat', 'Mühasib', '2007-06-01', '2015-03-01', 'Karyera inkişafı'),
 (1, 'Azər Kimya', 'Maliyyə Meneceri', '2015-04-01', '2020-01-01', 'Daha yüksək maaş'),
 (2, 'Bakı Ticarət', 'Mühasib köməkçisi', '2011-06-01', '2015-09-01', 'Ev təhsili'),
@@ -107,7 +107,7 @@ INSERT INTO employee_experience (employee_id, company_name, position, start_date
 -- --------------------------------------------------------
 -- Demo ailə məlumatları
 -- --------------------------------------------------------
-INSERT INTO employee_family (employee_id, relation_type, full_name, birth_date, contact_number) VALUES
+INSERT IGNORE INTO employee_family (employee_id, relation_type, full_name, birth_date, contact_number) VALUES
 (1, 'FATHER', 'Məmmədov Samir Ələkbər oğlu', '1955-05-10', '+994501112233'),
 (1, 'MOTHER', 'Məmmədova Zərinə Məmməd qızı', '1960-08-22', '+994502223344'),
 (1, 'SPOUSE', 'Məmmədova Leyla Rəşid qızı', '1988-03-18', '+994503334455'),
@@ -116,4 +116,4 @@ INSERT INTO employee_family (employee_id, relation_type, full_name, birth_date, 
 (9, 'SPOUSE', 'Novruzova Gülay Rəşid qızı', '1993-04-08', '+994505556677');
 
 -- Update terminated employee
-UPDATE employees SET termination_date = '2023-06-15', termination_reason = 'Öz istəyi ilə' WHERE id = 14;
+UPDATE employees SET termination_date = '2023-06-15', termination_reason = 'Öz istəyi ilə' WHERE fin_code = 'P5Q6R7S';

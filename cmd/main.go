@@ -11,6 +11,9 @@ import (
         "html/template"
         "log"
         "net/http"
+        "os"
+        "path/filepath"
+        "sort"
         "strings"
         "time"
 
@@ -30,6 +33,11 @@ func main() {
         defer db.Close()
 
         log.Println("Database bağlantısı uğurlu!")
+
+        // Migrasiyaları işə sal
+        if err := runMigrations(db); err != nil {
+                log.Printf("Migrasiya xətası (davam edilir): %v", err)
+        }
 
         // Repository-ləri yarat
         userRepo := repository.NewUserRepository(db)
@@ -97,11 +105,11 @@ func main() {
         mux.HandleFunc("/api/departments", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetDepartmentsByCompany))
         mux.HandleFunc("/api/positions", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetPositionsByCompany))
 
-	// Sertifikat route-ları
-	mux.HandleFunc("/employee/certificate/add", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.AddCertificate))
-	mux.HandleFunc("/employee/certificate/update", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.UpdateCertificate))
-	mux.HandleFunc("/employee/certificate/delete", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.DeleteCertificate))
-	mux.HandleFunc("/api/work-locations", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetWorkLocations))
+        // Sertifikat route-ları
+        mux.HandleFunc("/employee/certificate/add", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.AddCertificate))
+        mux.HandleFunc("/employee/certificate/update", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.UpdateCertificate))
+        mux.HandleFunc("/employee/certificate/delete", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.DeleteCertificate))
+        mux.HandleFunc("/api/work-locations", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetWorkLocations))
 
         // Struktur route-ları
         mux.HandleFunc("/structure", middleware.AuthMiddleware(cfg.JWTSecret, companyHandler.ShowStructure))
@@ -289,9 +297,9 @@ func seedUsers(userRepo *repository.UserRepository, companyRepo *repository.Comp
                 {"Lojistika HR", "hr@tezlogistics.az", models.RoleSubsidiaryHR, intPtr(3)},
                 {"Hotel HR", "hr@sapphirehotels.az", models.RoleSubsidiaryHR, intPtr(4)},
                 {"City Service HR", "hr@cityservice.az", models.RoleSubsidiaryHR, intPtr(5)},
-		{"EcoProd HR", "hr@ecoprod.az", models.RoleSubsidiaryHR, intPtr(6)},
-		{"Mangal HR", "hr@mangalmmc.az", models.RoleSubsidiaryHR, intPtr(7)},
-		{"Judo Club HR", "hr@judoclub.az", models.RoleSubsidiaryHR, intPtr(8)},
+                {"EcoProd HR", "hr@ecoprod.az", models.RoleSubsidiaryHR, intPtr(6)},
+                {"Mangal HR", "hr@mangalmmc.az", models.RoleSubsidiaryHR, intPtr(7)},
+                {"Judo Club HR", "hr@judoclub.az", models.RoleSubsidiaryHR, intPtr(8)},
         }
 
         for _, u := range users {
@@ -319,4 +327,71 @@ func seedUsers(userRepo *repository.UserRepository, companyRepo *repository.Comp
 
 func intPtr(i int) *int {
         return &i
+}
+
+// runMigrations - Migrasiya fayllarını yoxlayır və tətbiq edir
+func runMigrations(db *sql.DB) error {
+        // Migrasiya tracking cədvəli yarat
+        _, err := db.Exec(`
+                CREATE TABLE IF NOT EXISTS schema_migrations (
+                        version VARCHAR(255) PRIMARY KEY,
+                        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        `)
+        if err != nil {
+                return fmt.Errorf("schema_migrations cədvəli yaradıla bilmədi: %w", err)
+        }
+
+        // Migrasiya fayllarını oxu
+        migrationsDir := "migrations"
+        if _, err := os.Stat(migrationsDir); os.IsNotExist(err) {
+                log.Println("Migrasiya qovluğu tapılmadı, gözlənilmir")
+                return nil
+        }
+
+        entries, err := os.ReadDir(migrationsDir)
+        if err != nil {
+                return fmt.Errorf("migrasiya qovluğu oxunula bilmədi: %w", err)
+        }
+
+        // SQL fayllarını sırala
+        var sqlFiles []string
+        for _, entry := range entries {
+                if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".sql") {
+                        sqlFiles = append(sqlFiles, entry.Name())
+                }
+        }
+        sort.Strings(sqlFiles)
+
+        // Hər bir migrasiyanı yoxla və işə sal
+        for _, file := range sqlFiles {
+                // Artıq tətbiq olunubmu?
+                var count int
+                db.QueryRow("SELECT COUNT(*) FROM schema_migrations WHERE version = ?", file).Scan(&count)
+                if count > 0 {
+                        continue
+                }
+
+                // Faylı oxu
+                content, err := os.ReadFile(filepath.Join(migrationsDir, file))
+                if err != nil {
+                        log.Printf("Migrasiya faylı oxunula bilmədi (%s): %v", file, err)
+                        continue
+                }
+
+                // Tətbiq et
+                log.Printf("Migrasiya tətbiq olunur: %s", file)
+                _, err = db.Exec(string(content))
+                if err != nil {
+                        log.Printf("Migrasiya xətası (%s): %v", file, err)
+                        // Davam et - digər migrasiyaları da yoxla
+                        continue
+                }
+
+                // Qeyd et
+                db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", file)
+                log.Printf("Migrasiya uğurla tətbiq edildi: %s", file)
+        }
+
+        return nil
 }

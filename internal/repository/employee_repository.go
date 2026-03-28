@@ -620,25 +620,63 @@ func (r *EmployeeRepository) GetStats(companyID *int) (*models.DashboardStats, e
 
         // Ümumi say
         query := fmt.Sprintf("SELECT COUNT(*) FROM employees %s", whereClause)
-        r.db.QueryRow(query, args...).Scan(&stats.TotalEmployees)
+        if err := r.db.QueryRow(query, args...).Scan(&stats.TotalEmployees); err != nil {
+                return nil, fmt.Errorf("total employees query error: %w", err)
+        }
 
         // Statuslara görə
-        query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' %s", andClause(whereClause))
-        r.db.QueryRow(query, append([]interface{}{"ACTIVE"}, args...)...).Scan(&stats.ActiveEmployees)
+        if whereClause != "" {
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND company_id = ?", *companyID)
+                if err := r.db.QueryRow(query).Scan(&stats.ActiveEmployees); err != nil {
+                        return nil, fmt.Errorf("active employees query error: %w", err)
+                }
 
-        query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'CANDIDATE' %s", andClause(whereClause))
-        r.db.QueryRow(query, append([]interface{}{"CANDIDATE"}, args...)...).Scan(&stats.Candidates)
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'CANDIDATE' AND company_id = ?", *companyID)
+                if err := r.db.QueryRow(query).Scan(&stats.Candidates); err != nil {
+                        return nil, fmt.Errorf("candidates query error: %w", err)
+                }
 
-        query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' %s", andClause(whereClause))
-        r.db.QueryRow(query, append([]interface{}{"TERMINATED"}, args...)...).Scan(&stats.Terminated)
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND company_id = ?", *companyID)
+                if err := r.db.QueryRow(query).Scan(&stats.Terminated); err != nil {
+                        return nil, fmt.Errorf("terminated query error: %w", err)
+                }
 
-        // Bu ay işə qəbul
-        query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND MONTH(hire_date) = MONTH(CURRENT_DATE()) AND YEAR(hire_date) = YEAR(CURRENT_DATE()) %s", andClause(whereClause))
-        r.db.QueryRow(query, args...).Scan(&stats.ThisMonthHired)
+                // Bu ay işə qəbul
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND MONTH(hire_date) = MONTH(CURRENT_DATE()) AND YEAR(hire_date) = YEAR(CURRENT_DATE()) AND company_id = ?", *companyID)
+                r.db.QueryRow(query).Scan(&stats.ThisMonthHired)
 
-        // Bu ay işdən çıxan
-        query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND MONTH(termination_date) = MONTH(CURRENT_DATE()) AND YEAR(termination_date) = YEAR(CURRENT_DATE()) %s", andClause(whereClause))
-        r.db.QueryRow(query, args...).Scan(&stats.ThisMonthTerminated)
+                // Bu ay işdən çıxan
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND MONTH(termination_date) = MONTH(CURRENT_DATE()) AND YEAR(termination_date) = YEAR(CURRENT_DATE()) AND company_id = ?", *companyID)
+                r.db.QueryRow(query).Scan(&stats.ThisMonthTerminated)
+        } else {
+                query = "SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE'"
+                if err := r.db.QueryRow(query).Scan(&stats.ActiveEmployees); err != nil {
+                        return nil, fmt.Errorf("active employees query error: %w", err)
+                }
+
+                query = "SELECT COUNT(*) FROM employees WHERE status = 'CANDIDATE'"
+                if err := r.db.QueryRow(query).Scan(&stats.Candidates); err != nil {
+                        return nil, fmt.Errorf("candidates query error: %w", err)
+                }
+
+                query = "SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED'"
+                if err := r.db.QueryRow(query).Scan(&stats.Terminated); err != nil {
+                        return nil, fmt.Errorf("terminated query error: %w", err)
+                }
+
+                // Bu ay işə qəbul
+                query = "SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND MONTH(hire_date) = MONTH(CURRENT_DATE()) AND YEAR(hire_date) = YEAR(CURRENT_DATE())"
+                r.db.QueryRow(query).Scan(&stats.ThisMonthHired)
+
+                // Bu ay işdən çıxan
+                query = "SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND MONTH(termination_date) = MONTH(CURRENT_DATE()) AND YEAR(termination_date) = YEAR(CURRENT_DATE())"
+                r.db.QueryRow(query).Scan(&stats.ThisMonthTerminated)
+        }
+
+        // Şirkətlərin sayı
+        if err := r.db.QueryRow("SELECT COUNT(*) FROM companies").Scan(&stats.TotalCompanies); err != nil {
+                stats.TotalCompanies = 0
+        }
 
         return stats, nil
 }
@@ -652,125 +690,125 @@ func andClause(whereClause string) string {
 
 // GetWorkLocationsByCompany - Şirkətə aid iş yerlərini gətir
 func (r *EmployeeRepository) GetWorkLocationsByCompany(companyID int) ([]models.WorkLocation, error) {
-	query := "SELECT id, company_id, name, address, type, is_active, created_at FROM work_locations WHERE company_id = ? AND is_active = TRUE ORDER BY name"
-	rows, err := r.db.Query(query, companyID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var locations []models.WorkLocation
-	for rows.Next() {
-		var loc models.WorkLocation
-		if err := rows.Scan(&loc.ID, &loc.CompanyID, &loc.Name, &loc.Address, &loc.Type, &loc.IsActive, &loc.CreatedAt); err != nil {
-			return nil, err
-		}
-		locations = append(locations, loc)
-	}
-	return locations, nil
+        query := "SELECT id, company_id, name, address, type, is_active, created_at FROM work_locations WHERE company_id = ? AND is_active = TRUE ORDER BY name"
+        rows, err := r.db.Query(query, companyID)
+        if err != nil {
+                return nil, err
+        }
+        defer rows.Close()
+        var locations []models.WorkLocation
+        for rows.Next() {
+                var loc models.WorkLocation
+                if err := rows.Scan(&loc.ID, &loc.CompanyID, &loc.Name, &loc.Address, &loc.Type, &loc.IsActive, &loc.CreatedAt); err != nil {
+                        return nil, err
+                }
+                locations = append(locations, loc)
+        }
+        return locations, nil
 }
 
 // GetWorkLocationByID - İş yeri ID ilə gətir
 func (r *EmployeeRepository) GetWorkLocationByID(id int) (*models.WorkLocation, error) {
-	query := "SELECT id, company_id, name, address, type, is_active, created_at FROM work_locations WHERE id = ?"
-	var loc models.WorkLocation
-	err := r.db.QueryRow(query, id).Scan(&loc.ID, &loc.CompanyID, &loc.Name, &loc.Address, &loc.Type, &loc.IsActive, &loc.CreatedAt)
-	if err != nil {
-		return nil, err
-	}
-	return &loc, nil
+        query := "SELECT id, company_id, name, address, type, is_active, created_at FROM work_locations WHERE id = ?"
+        var loc models.WorkLocation
+        err := r.db.QueryRow(query, id).Scan(&loc.ID, &loc.CompanyID, &loc.Name, &loc.Address, &loc.Type, &loc.IsActive, &loc.CreatedAt)
+        if err != nil {
+                return nil, err
+        }
+        return &loc, nil
 }
 
 // GetCertificatesByEmployee - İşçinin sertifikatlarını gətir
 func (r *EmployeeRepository) GetCertificatesByEmployee(employeeID int) ([]models.EmployeeCertificate, error) {
-	query := "SELECT id, employee_id, certificate_type, certificate_number, issued_by, issue_date, expiry_date, status, notes, created_at, updated_at FROM employee_certificates WHERE employee_id = ? ORDER BY expiry_date ASC"
-	rows, err := r.db.Query(query, employeeID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var certs []models.EmployeeCertificate
-	for rows.Next() {
-		var c models.EmployeeCertificate
-		var issueDate, expiryDate sql.NullTime
-		var certNumber, issuedBy, notes, status sql.NullString
-		if err := rows.Scan(&c.ID, &c.EmployeeID, &c.CertificateType, &certNumber, &issuedBy, &issueDate, &expiryDate, &status, &notes, &c.CreatedAt, &c.UpdatedAt); err != nil {
-			return nil, err
-		}
-		if certNumber.Valid {
-			c.CertificateNumber = certNumber.String
-		}
-		if issuedBy.Valid {
-			c.IssuedBy = issuedBy.String
-		}
-		if notes.Valid {
-			c.Notes = notes.String
-		}
-		if status.Valid {
-			c.Status = status.String
-		}
-		if issueDate.Valid {
-			c.IssueDate = &issueDate.Time
-		}
-		if expiryDate.Valid {
-			c.ExpiryDate = &expiryDate.Time
-		}
-		certs = append(certs, c)
-	}
-	return certs, nil
+        query := "SELECT id, employee_id, certificate_type, certificate_number, issued_by, issue_date, expiry_date, status, notes, created_at, updated_at FROM employee_certificates WHERE employee_id = ? ORDER BY expiry_date ASC"
+        rows, err := r.db.Query(query, employeeID)
+        if err != nil {
+                return nil, err
+        }
+        defer rows.Close()
+        var certs []models.EmployeeCertificate
+        for rows.Next() {
+                var c models.EmployeeCertificate
+                var issueDate, expiryDate sql.NullTime
+                var certNumber, issuedBy, notes, status sql.NullString
+                if err := rows.Scan(&c.ID, &c.EmployeeID, &c.CertificateType, &certNumber, &issuedBy, &issueDate, &expiryDate, &status, &notes, &c.CreatedAt, &c.UpdatedAt); err != nil {
+                        return nil, err
+                }
+                if certNumber.Valid {
+                        c.CertificateNumber = certNumber.String
+                }
+                if issuedBy.Valid {
+                        c.IssuedBy = issuedBy.String
+                }
+                if notes.Valid {
+                        c.Notes = notes.String
+                }
+                if status.Valid {
+                        c.Status = status.String
+                }
+                if issueDate.Valid {
+                        c.IssueDate = &issueDate.Time
+                }
+                if expiryDate.Valid {
+                        c.ExpiryDate = &expiryDate.Time
+                }
+                certs = append(certs, c)
+        }
+        return certs, nil
 }
 
 // AddCertificate - Sertifikat əlavə et
 func (r *EmployeeRepository) AddCertificate(cert *models.EmployeeCertificate) error {
-	query := "INSERT INTO employee_certificates (employee_id, certificate_type, certificate_number, issued_by, issue_date, expiry_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?)"
-	result, err := r.db.Exec(query, cert.EmployeeID, cert.CertificateType, cert.CertificateNumber, cert.IssuedBy, cert.IssueDate, cert.ExpiryDate, cert.Notes)
-	if err != nil {
-		return err
-	}
-	id, _ := result.LastInsertId()
-	cert.ID = int(id)
-	return nil
+        query := "INSERT INTO employee_certificates (employee_id, certificate_type, certificate_number, issued_by, issue_date, expiry_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        result, err := r.db.Exec(query, cert.EmployeeID, cert.CertificateType, cert.CertificateNumber, cert.IssuedBy, cert.IssueDate, cert.ExpiryDate, cert.Notes)
+        if err != nil {
+                return err
+        }
+        id, _ := result.LastInsertId()
+        cert.ID = int(id)
+        return nil
 }
 
 // UpdateCertificate - Sertifikat yenilə
 func (r *EmployeeRepository) UpdateCertificate(cert *models.EmployeeCertificate) error {
-	query := "UPDATE employee_certificates SET certificate_type=?, certificate_number=?, issued_by=?, issue_date=?, expiry_date=?, notes=? WHERE id=?"
-	_, err := r.db.Exec(query, cert.CertificateType, cert.CertificateNumber, cert.IssuedBy, cert.IssueDate, cert.ExpiryDate, cert.Notes, cert.ID)
-	return err
+        query := "UPDATE employee_certificates SET certificate_type=?, certificate_number=?, issued_by=?, issue_date=?, expiry_date=?, notes=? WHERE id=?"
+        _, err := r.db.Exec(query, cert.CertificateType, cert.CertificateNumber, cert.IssuedBy, cert.IssueDate, cert.ExpiryDate, cert.Notes, cert.ID)
+        return err
 }
 
 // DeleteCertificate - Sertifikat sil
 func (r *EmployeeRepository) DeleteCertificate(id int) error {
-	_, err := r.db.Exec("DELETE FROM employee_certificates WHERE id=?", id)
-	return err
+        _, err := r.db.Exec("DELETE FROM employee_certificates WHERE id=?", id)
+        return err
 }
 
 // GetCertificateByID - Sertifikat ID ilə gətir
 func (r *EmployeeRepository) GetCertificateByID(id int) (*models.EmployeeCertificate, error) {
-	query := "SELECT id, employee_id, certificate_type, certificate_number, issued_by, issue_date, expiry_date, status, notes, created_at, updated_at FROM employee_certificates WHERE id = ?"
-	var c models.EmployeeCertificate
-	var issueDate, expiryDate sql.NullTime
-	var certNumber, issuedBy, notes, status sql.NullString
-	err := r.db.QueryRow(query, id).Scan(&c.ID, &c.EmployeeID, &c.CertificateType, &certNumber, &issuedBy, &issueDate, &expiryDate, &status, &notes, &c.CreatedAt, &c.UpdatedAt)
-	if err != nil {
-		return nil, err
-	}
-	if certNumber.Valid {
-		c.CertificateNumber = certNumber.String
-	}
-	if issuedBy.Valid {
-		c.IssuedBy = issuedBy.String
-	}
-	if notes.Valid {
-		c.Notes = notes.String
-	}
-	if status.Valid {
-		c.Status = status.String
-	}
-	if issueDate.Valid {
-		c.IssueDate = &issueDate.Time
-	}
-	if expiryDate.Valid {
-		c.ExpiryDate = &expiryDate.Time
-	}
-	return &c, nil
+        query := "SELECT id, employee_id, certificate_type, certificate_number, issued_by, issue_date, expiry_date, status, notes, created_at, updated_at FROM employee_certificates WHERE id = ?"
+        var c models.EmployeeCertificate
+        var issueDate, expiryDate sql.NullTime
+        var certNumber, issuedBy, notes, status sql.NullString
+        err := r.db.QueryRow(query, id).Scan(&c.ID, &c.EmployeeID, &c.CertificateType, &certNumber, &issuedBy, &issueDate, &expiryDate, &status, &notes, &c.CreatedAt, &c.UpdatedAt)
+        if err != nil {
+                return nil, err
+        }
+        if certNumber.Valid {
+                c.CertificateNumber = certNumber.String
+        }
+        if issuedBy.Valid {
+                c.IssuedBy = issuedBy.String
+        }
+        if notes.Valid {
+                c.Notes = notes.String
+        }
+        if status.Valid {
+                c.Status = status.String
+        }
+        if issueDate.Valid {
+                c.IssueDate = &issueDate.Time
+        }
+        if expiryDate.Valid {
+                c.ExpiryDate = &expiryDate.Time
+        }
+        return &c, nil
 }
