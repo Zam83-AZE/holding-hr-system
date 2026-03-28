@@ -69,11 +69,11 @@
             <!-- Tabs -->
             <div class="bg-white rounded-lg shadow">
                 <div class="border-b flex">
-                    <button onclick="showTab('personal')" class="px-6 py-3 border-b-2 border-blue-500 text-blue-600 font-medium tab-btn" data-tab="personal">Şəxsi</button>
-                    <button onclick="showTab('education')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="education">Təhsil</button>
-                    <button onclick="showTab('experience')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="experience">Təcrübə</button>
-                    <button onclick="showTab('family')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="family">Ailə</button>
-                    <button onclick="showTab('history')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="history">Tarixçə</button>
+                    <button onclick="showTab('personal', event)" class="px-6 py-3 border-b-2 border-blue-500 text-blue-600 font-medium tab-btn" data-tab="personal">Şəxsi</button>
+                    <button onclick="showTab('education', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="education">Təhsil</button>
+                    <button onclick="showTab('experience', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="experience">Təcrübə</button>
+                    <button onclick="showTab('family', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="family">Ailə</button>
+                    <button onclick="showTab('history', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="history">Tarixçə</button>
                 </div>
                 
                 <!-- Personal Tab -->
@@ -301,15 +301,23 @@
     </div>
     
     <script>
-    function showTab(tab) {
+    function showTab(tab, evt) {
+        // Bütün tab content-ləri gizlət
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        // Seçilən tab-ı göstər
         document.getElementById(tab + '-tab').classList.remove('hidden');
+        
+        // Bütün button-lardan aktiv stilini sil
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
             btn.classList.add('text-gray-500');
         });
-        event.target.classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
-        event.target.classList.remove('text-gray-500');
+        
+        // Kliklənən button-a aktiv stili əlavə et
+        if (evt && evt.target) {
+            evt.target.classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
+            evt.target.classList.remove('text-gray-500');
+        }
     }
     </script>
 </body>
