@@ -97,13 +97,21 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
 
         companies, _ := h.companyRepo.GetAll()
 
+        // Seçilmiş şirkətin departamentlərini gətir
+        var departments []models.Department
+        if selectedCompanyID > 0 {
+                departments, _ = h.deptRepo.GetByCompanyID(selectedCompanyID)
+        }
+
         data := PageData{
-                Title:              "Kadr Uçotu",
-                User:               user,
-                Employees:          employees,
-                Companies:          companies,
-                Status:             string(status),
-                SelectedCompany:    selectedCompanyID,
+                Title:                "Kadr Uçotu",
+                User:                 user,
+                Employees:            employees,
+                Companies:            companies,
+                Departments:          departments,
+                Status:               string(status),
+                SelectedCompany:      selectedCompanyID,
+                SelectedCompanyName:  selectedCompanyName,
         }
 
         // Şirkət adını title-a əlavə et

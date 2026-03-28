@@ -12,14 +12,20 @@
         <!-- Sidebar -->
         <div class="w-64 bg-white text-gray-700 border-r border-gray-200 p-4 flex-shrink-0 flex flex-col">
             <div class="p-4 border-b border-gray-200">
-                <h1 class="text-xl font-bold flex items-center">
+                <a href="/" class="text-xl font-bold flex items-center hover:opacity-80 transition">
                     <i class="fas fa-building mr-2 text-blue-600"></i>
                     Azman HR
-                </h1>
+                </a>
                 {{if .SelectedCompany}}
-                <p class="text-xs text-blue-600 mt-1 font-medium">
-                    <i class="fas fa-filter mr-1"></i>Şirkət filtri aktiv
-                </p>
+                <div class="mt-3 bg-blue-50 rounded-lg p-3">
+                    <div class="flex items-center">
+                        <i class="fas fa-building text-blue-500 mr-2 text-sm"></i>
+                        <span class="text-sm font-semibold text-blue-700">{{.SelectedCompanyName}}</span>
+                    </div>
+                    <p class="text-xs text-blue-500 mt-1">
+                        <i class="fas fa-users mr-1"></i>{{len .Employees}} işçi
+                    </p>
+                </div>
                 {{end}}
             </div>
 
@@ -28,15 +34,15 @@
                     <i class="fas fa-home w-5 mr-3"></i>Dashboard
                 </a>
 
-                <a href="/employees?status=ACTIVE" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-50 transition {{if eq .Status "ACTIVE"}}bg-blue-50 font-medium{{end}}">
+                <a href="/employees?status=ACTIVE{{if .SelectedCompany}}&company_id={{.SelectedCompany}}{{end}}" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-50 transition {{if eq .Status "ACTIVE"}}bg-blue-50 font-medium{{end}}">
                     <i class="fas fa-user-check w-5 mr-3"></i>Cari İşçilər
                 </a>
 
-                <a href="/employees?status=CANDIDATE" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-50 transition {{if eq .Status "CANDIDATE"}}bg-blue-50 font-medium{{end}}">
+                <a href="/employees?status=CANDIDATE{{if .SelectedCompany}}&company_id={{.SelectedCompany}}{{end}}" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-50 transition {{if eq .Status "CANDIDATE"}}bg-blue-50 font-medium{{end}}">
                     <i class="fas fa-user-clock w-5 mr-3"></i>Namizədlər
                 </a>
 
-                <a href="/employees?status=TERMINATED" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-50 transition {{if eq .Status "TERMINATED"}}bg-blue-50 font-medium{{end}}">
+                <a href="/employees?status=TERMINATED{{if .SelectedCompany}}&company_id={{.SelectedCompany}}{{end}}" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-50 transition {{if eq .Status "TERMINATED"}}bg-blue-50 font-medium{{end}}">
                     <i class="fas fa-user-times w-5 mr-3"></i>İşdən Çıxanlar
                 </a>
 
@@ -51,11 +57,26 @@
                 {{end}}
             </nav>
 
-            <!-- Şirkət siyahısı (təkər redirect etmək üçün) -->
+            <!-- Şirkət daxilində departamentlər -->
+            {{if and .SelectedCompany .Departments}}
+            <div class="p-4 border-t border-gray-200">
+                <p class="text-xs text-gray-400 uppercase mb-2 font-semibold">Departamentlər</p>
+                <div class="space-y-1 max-h-40 overflow-y-auto">
+                    {{range .Departments}}
+                    <div class="flex items-center text-xs px-3 py-1.5 text-gray-500">
+                        <i class="fas fa-folder text-blue-300 mr-2"></i>
+                        <span class="truncate">{{.Name}}</span>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+
+            <!-- Şirkət siyahısı -->
             {{if and .SelectedCompany .Companies}}
             <div class="p-4 border-t border-gray-200">
                 <p class="text-xs text-gray-400 uppercase mb-2 font-semibold">Şirkətlər</p>
-                <div class="space-y-1">
+                <div class="space-y-1 max-h-32 overflow-y-auto">
                     {{range .Companies}}
                     <a href="/employees?status={{$.Status}}&company_id={{.ID}}" class="block text-xs px-3 py-1.5 rounded truncate {{if eq .ID $.SelectedCompany}}bg-blue-100 text-blue-700 font-medium{{else}}hover:bg-blue-50 text-gray-500{{end}}">
                         {{.Name}}

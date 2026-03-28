@@ -66,17 +66,17 @@ func (r *EmployeeRepository) GetByID(id int) (*models.Employee, error) {
 
         employee := &models.Employee{}
         var birthDate, hireDate, termDate sql.NullTime
-        var gender sql.NullString
+        var gender, photoPath, phone, email, addr sql.NullString
         var deptID, posID sql.NullInt64
-        var deptName, posName, termReason sql.NullString
+        var deptName, posName, termReason, companyName sql.NullString
 
         err := r.db.QueryRow(query, id).Scan(
                 &employee.ID, &employee.CompanyID, &employee.FirstName, &employee.LastName,
-                &employee.FatherName, &employee.FINCode, &birthDate, &gender, &employee.PhotoPath,
-                &employee.Phone, &employee.Email, &employee.Address, &employee.Status,
+                &employee.FatherName, &employee.FINCode, &birthDate, &gender, &photoPath,
+                &phone, &email, &addr, &employee.Status,
                 &deptID, &posID, &hireDate, &termDate, &termReason,
                 &employee.CreatedAt, &employee.UpdatedAt,
-                &employee.CompanyName, &deptName, &posName,
+                &companyName, &deptName, &posName,
         )
 
         if err != nil {
@@ -89,6 +89,18 @@ func (r *EmployeeRepository) GetByID(id int) (*models.Employee, error) {
         if gender.Valid {
                 g := models.Gender(gender.String)
                 employee.Gender = &g
+        }
+        if photoPath.Valid {
+                employee.PhotoPath = photoPath.String
+        }
+        if phone.Valid {
+                employee.Phone = phone.String
+        }
+        if email.Valid {
+                employee.Email = email.String
+        }
+        if addr.Valid {
+                employee.Address = addr.String
         }
         if deptID.Valid {
                 id := int(deptID.Int64)
@@ -106,6 +118,9 @@ func (r *EmployeeRepository) GetByID(id int) (*models.Employee, error) {
         }
         if termReason.Valid {
                 employee.TerminationReason = termReason.String
+        }
+        if companyName.Valid {
+                employee.CompanyName = companyName.String
         }
         if deptName.Valid {
                 employee.DepartmentName = deptName.String
@@ -245,17 +260,17 @@ func (r *EmployeeRepository) queryEmployees(query string, args ...interface{}) (
         for rows.Next() {
                 var e models.Employee
                 var birthDate, hireDate, termDate sql.NullTime
-                var gender sql.NullString
+                var gender, photoPath, phone, email, addr sql.NullString
                 var deptID, posID sql.NullInt64
-                var deptName, posName, termReason sql.NullString
+                var deptName, posName, termReason, companyName sql.NullString
 
                 err := rows.Scan(
                         &e.ID, &e.CompanyID, &e.FirstName, &e.LastName,
-                        &e.FatherName, &e.FINCode, &birthDate, &gender, &e.PhotoPath,
-                        &e.Phone, &e.Email, &e.Address, &e.Status,
+                        &e.FatherName, &e.FINCode, &birthDate, &gender, &photoPath,
+                        &phone, &email, &addr, &e.Status,
                         &deptID, &posID, &hireDate, &termDate, &termReason,
                         &e.CreatedAt, &e.UpdatedAt,
-                        &e.CompanyName, &deptName, &posName,
+                        &companyName, &deptName, &posName,
                 )
 
                 if err != nil {
@@ -268,6 +283,18 @@ func (r *EmployeeRepository) queryEmployees(query string, args ...interface{}) (
                 if gender.Valid {
                         g := models.Gender(gender.String)
                         e.Gender = &g
+                }
+                if photoPath.Valid {
+                        e.PhotoPath = photoPath.String
+                }
+                if phone.Valid {
+                        e.Phone = phone.String
+                }
+                if email.Valid {
+                        e.Email = email.String
+                }
+                if addr.Valid {
+                        e.Address = addr.String
                 }
                 if deptID.Valid {
                         id := int(deptID.Int64)
@@ -285,6 +312,9 @@ func (r *EmployeeRepository) queryEmployees(query string, args ...interface{}) (
                 }
                 if termReason.Valid {
                         e.TerminationReason = termReason.String
+                }
+                if companyName.Valid {
+                        e.CompanyName = companyName.String
                 }
                 if deptName.Valid {
                         e.DepartmentName = deptName.String

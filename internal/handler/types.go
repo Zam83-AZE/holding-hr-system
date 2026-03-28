@@ -15,15 +15,16 @@ type PageData struct {
         Experience       []models.EmployeeExperience
         Family           []models.EmployeeFamily
         Lifecycle        []models.EmployeeLifecycleLog
-	Certificates     []models.EmployeeCertificate
+        Certificates     []models.EmployeeCertificate
         Companies        []models.Company
         Users            []models.User
         Departments      []models.Department
         Positions        []models.Position
-        Status           string
-        Query            string
-        SelectedCompany  int
-        IsNew            bool
+        Status              string
+        Query               string
+        SelectedCompany     int
+        SelectedCompanyName string
+        IsNew               bool
         Error            string
         Success          string
 }
