@@ -366,11 +366,14 @@ func testNewEmployeeForm() TestResult {
 }
 
 func testCreateEmployee() TestResult {
+        // Use timestamp for unique FIN code
+        finCode := fmt.Sprintf("T%d", time.Now().Unix()%1000000)
+        
         data := url.Values{}
         data.Set("company_id", "2")
         data.Set("first_name", "Test")
         data.Set("last_name", "User")
-        data.Set("fin_code", "TEST123")
+        data.Set("fin_code", finCode)
         data.Set("phone", "+994501234567")
         
         resp, err := httpClient.PostForm(baseURL+"/employee/create", data)
@@ -489,9 +492,12 @@ func testAddFamilyMember() TestResult {
 }
 
 func testCreateDepartment() TestResult {
+        // Use timestamp for unique name
+        deptName := fmt.Sprintf("Test Dept %d", time.Now().Unix()%100000)
+        
         data := url.Values{}
         data.Set("company_id", "2")
-        data.Set("name", "Test Department")
+        data.Set("name", deptName)
         
         resp, err := httpClient.PostForm(baseURL+"/department/create", data)
         if err != nil {
@@ -506,9 +512,12 @@ func testCreateDepartment() TestResult {
 }
 
 func testCreatePosition() TestResult {
+        // Use timestamp for unique name
+        posName := fmt.Sprintf("Test Pos %d", time.Now().Unix()%100000)
+        
         data := url.Values{}
         data.Set("company_id", "2")
-        data.Set("name", "Test Position")
+        data.Set("name", posName)
         
         resp, err := httpClient.PostForm(baseURL+"/position/create", data)
         if err != nil {
