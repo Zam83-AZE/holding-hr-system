@@ -6,12 +6,11 @@ WORKDIR /app
 # Install dependencies
 RUN apk add --no-cache git ca-certificates tzdata
 
-# Copy go mod files
-COPY go.mod go.sum ./
+# Copy only go.mod (not go.sum to avoid checksum issues)
+COPY go.mod ./
 
-# Download dependencies with GOSUMDB=off to bypass checksum verification issues
-ENV GOSUMDB=off
-RUN go mod download
+# Download dependencies without checksum verification
+RUN GOSUMDB=off go mod download
 
 # Copy source code
 COPY . .
