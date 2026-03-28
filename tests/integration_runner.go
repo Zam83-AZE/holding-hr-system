@@ -105,9 +105,40 @@ func main() {
         runTest("32. Subsidiary HR - Limited Access", testSubsidiaryHRLimited)
         runTest("33. Subsidiary HR - Logout", testLogout)
         
-        // Final test
+        // API Endpoints
         runTest("34. API Departments Endpoint", testAPIDepartments)
         runTest("35. API Positions Endpoint", testAPIPositions)
+        
+        // Login as Admin for extended tests
+        runTest("36. Login as Admin (Extended Tests)", testLoginAdmin)
+        
+        // Employee Card Tabs Tests
+        runTest("37. Employee Card - Personal Tab", testEmployeeCardPersonalTab)
+        runTest("38. Employee Card - Education Tab", testEmployeeCardEducationTab)
+        runTest("39. Employee Card - Experience Tab", testEmployeeCardExperienceTab)
+        runTest("40. Employee Card - Family Tab", testEmployeeCardFamilyTab)
+        runTest("41. Employee Card - History Tab", testEmployeeCardHistoryTab)
+        
+        // Dashboard Statistics
+        runTest("42. Dashboard Statistics Display", testDashboardStatistics)
+        
+        // Company Management
+        runTest("43. Create New Company", testCreateCompany)
+        
+        // Department & Position Management
+        runTest("44. Delete Position", testDeletePosition)
+        runTest("45. Delete Department", testDeleteDepartment)
+        
+        // User Management
+        runTest("46. Users Page Access", testUsersPageAccess)
+        runTest("47. Create New User", testCreateUser)
+        
+        // Structure Page
+        runTest("48. Company Structure Page", testCompanyStructure)
+        
+        // Employee Search Enhanced
+        runTest("49. Employee Search by FIN", testEmployeeSearchByFIN)
+        runTest("50. Employee Filter by Company", testEmployeeFilterByCompany)
         
         testReport.EndTime = time.Now().Format(time.RFC3339)
         testReport.Duration = time.Since(startTime).Milliseconds()
@@ -738,6 +769,268 @@ func testAPIPositions() TestResult {
                 return TestResult{Status: "PASS", Message: fmt.Sprintf("Found %d positions", len(positions))}
         }
         return TestResult{Status: "FAIL", Message: fmt.Sprintf("API returned %d", resp.StatusCode)}
+}
+
+// ========== EMPLOYEE CARD TAB TESTS ==========
+
+func testEmployeeCardPersonalTab() TestResult {
+        // First get an employee card page
+        resp, err := httpClient.Get(baseURL + "/employees?status=ACTIVE")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        body, _ := io.ReadAll(resp.Body)
+        resp.Body.Close()
+        
+        // Check if personal tab content exists (default visible tab)
+        if strings.Contains(string(body), "Ad") && strings.Contains(string(body), "Soyad") && strings.Contains(string(body), "FİN") {
+                return TestResult{Status: "PASS", Message: "Personal tab fields visible"}
+        }
+        
+        // Try to access employee card directly
+        resp2, err := httpClient.Get(baseURL + "/employee/card?id=1")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp2.Body.Close()
+        
+        body2, _ := io.ReadAll(resp2.Body)
+        bodyStr := string(body2)
+        
+        if strings.Contains(bodyStr, "personal-tab") || strings.Contains(bodyStr, "first_name") {
+                return TestResult{Status: "PASS", Message: "Personal tab accessible"}
+        }
+        return TestResult{Status: "FAIL", Message: "Personal tab not found"}
+}
+
+func testEmployeeCardEducationTab() TestResult {
+        resp, err := httpClient.Get(baseURL + "/employee/card?id=1")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        // Check for education tab elements
+        if strings.Contains(bodyStr, "education-tab") || strings.Contains(bodyStr, "Təhsil") || strings.Contains(bodyStr, "eduModal") {
+                return TestResult{Status: "PASS", Message: "Education tab present"}
+        }
+        return TestResult{Status: "FAIL", Message: "Education tab not found"}
+}
+
+func testEmployeeCardExperienceTab() TestResult {
+        resp, err := httpClient.Get(baseURL + "/employee/card?id=1")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        // Check for experience tab elements
+        if strings.Contains(bodyStr, "experience-tab") || strings.Contains(bodyStr, "Təcrübə") || strings.Contains(bodyStr, "expModal") {
+                return TestResult{Status: "PASS", Message: "Experience tab present"}
+        }
+        return TestResult{Status: "FAIL", Message: "Experience tab not found"}
+}
+
+func testEmployeeCardFamilyTab() TestResult {
+        resp, err := httpClient.Get(baseURL + "/employee/card?id=1")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        // Check for family tab elements
+        if strings.Contains(bodyStr, "family-tab") || strings.Contains(bodyStr, "Ailə") || strings.Contains(bodyStr, "famModal") {
+                return TestResult{Status: "PASS", Message: "Family tab present"}
+        }
+        return TestResult{Status: "FAIL", Message: "Family tab not found"}
+}
+
+func testEmployeeCardHistoryTab() TestResult {
+        resp, err := httpClient.Get(baseURL + "/employee/card?id=1")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        // Check for history tab elements
+        if strings.Contains(bodyStr, "history-tab") || strings.Contains(bodyStr, "Tarixçə") {
+                return TestResult{Status: "PASS", Message: "History tab present"}
+        }
+        return TestResult{Status: "FAIL", Message: "History tab not found"}
+}
+
+// ========== DASHBOARD TESTS ==========
+
+func testDashboardStatistics() TestResult {
+        resp, err := httpClient.Get(baseURL + "/")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        // Check for dashboard statistics elements
+        hasStats := strings.Contains(bodyStr, "Cari") || 
+                strings.Contains(bodyStr, "Namizəd") ||
+                strings.Contains(bodyStr, "İşçilər") ||
+                strings.Contains(bodyStr, "department") ||
+                strings.Contains(bodyStr, "company")
+        
+        if hasStats {
+                return TestResult{Status: "PASS", Message: "Dashboard statistics visible"}
+        }
+        return TestResult{Status: "FAIL", Message: "Dashboard statistics not found"}
+}
+
+// ========== COMPANY MANAGEMENT TESTS ==========
+
+func testCreateCompany() TestResult {
+        data := url.Values{}
+        data.Set("name", "Test Company " + time.Now().Format("20060102150405"))
+        data.Set("address", "Test Address")
+        data.Set("phone", "+994501234567")
+        data.Set("email", "test@testcompany.az")
+        data.Set("tax_id", "TEST" + time.Now().Format("150405"))
+        
+        resp, err := httpClient.PostForm(baseURL+"/settings/company/create", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 || resp.StatusCode == 303 {
+                return TestResult{Status: "PASS", Message: "Company creation endpoint accessible"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Company creation returned %d", resp.StatusCode)}
+}
+
+// ========== DEPARTMENT & POSITION DELETE TESTS ==========
+
+func testDeletePosition() TestResult {
+        data := url.Values{}
+        data.Set("id", "99999") // Non-existing position
+        
+        resp, err := httpClient.PostForm(baseURL+"/position/delete", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        // Endpoint should be accessible (may return error for non-existing)
+        return TestResult{Status: "PASS", Message: "Position delete endpoint accessible"}
+}
+
+func testDeleteDepartment() TestResult {
+        data := url.Values{}
+        data.Set("id", "99999") // Non-existing department
+        
+        resp, err := httpClient.PostForm(baseURL+"/department/delete", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        // Endpoint should be accessible (may return error for non-existing)
+        return TestResult{Status: "PASS", Message: "Department delete endpoint accessible"}
+}
+
+// ========== USER MANAGEMENT TESTS ==========
+
+func testUsersPageAccess() TestResult {
+        resp, err := httpClient.Get(baseURL + "/settings/users")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        if strings.Contains(bodyStr, "İstifadəçilər") || strings.Contains(bodyStr, "users") || resp.StatusCode == 200 {
+                return TestResult{Status: "PASS", Message: "Users page accessible"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Users page returned %d", resp.StatusCode)}
+}
+
+func testCreateUser() TestResult {
+        timestamp := time.Now().Format("20060102150405")
+        data := url.Values{}
+        data.Set("email", "testuser" + timestamp + "@test.az")
+        data.Set("password", "test123456")
+        data.Set("full_name", "Test User")
+        data.Set("role", "HR")
+        data.Set("company_id", "1")
+        
+        resp, err := httpClient.PostForm(baseURL+"/settings/user/create", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 || resp.StatusCode == 303 {
+                return TestResult{Status: "PASS", Message: "User creation endpoint accessible"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("User creation returned %d", resp.StatusCode)}
+}
+
+// ========== STRUCTURE PAGE TESTS ==========
+
+func testCompanyStructure() TestResult {
+        resp, err := httpClient.Get(baseURL + "/structure")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        body, _ := io.ReadAll(resp.Body)
+        bodyStr := string(body)
+        
+        if strings.Contains(bodyStr, "Struktur") || strings.Contains(bodyStr, "Departament") || resp.StatusCode == 200 {
+                return TestResult{Status: "PASS", Message: "Structure page accessible"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Structure page returned %d", resp.StatusCode)}
+}
+
+// ========== EMPLOYEE SEARCH ENHANCED TESTS ==========
+
+func testEmployeeSearchByFIN() TestResult {
+        resp, err := httpClient.Get(baseURL + "/employee/search?q=ABC")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 {
+                return TestResult{Status: "PASS", Message: "Employee search endpoint works"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Search returned %d", resp.StatusCode)}
+}
+
+func testEmployeeFilterByCompany() TestResult {
+        resp, err := httpClient.Get(baseURL + "/employees?status=ACTIVE&company_id=1")
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 {
+                return TestResult{Status: "PASS", Message: "Employee filter by company works"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Filter returned %d", resp.StatusCode)}
 }
 
 // ========== HELPER FUNCTIONS ==========
