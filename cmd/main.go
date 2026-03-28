@@ -384,7 +384,13 @@ func runMigrations(db *sql.DB) error {
                 _, err = db.Exec(string(content))
                 if err != nil {
                         log.Printf("Migrasiya xətası (%s): %v", file, err)
-                        // Davam et - digər migrasiyaları da yoxla
+                        // Cəhd edək: statement-ləri bölərək icra et
+                        if execStatementsSeparately(db, string(content)) {
+                                log.Printf("Migrasiya statement bölməsi ilə uğurla tamamlandı: %s", file)
+                                db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", file)
+                        } else {
+                                log.Printf("Migrasiya tamamilə uğursuz oldu: %s", file)
+                        }
                         continue
                 }
 
@@ -394,4 +400,82 @@ func runMigrations(db *sql.DB) error {
         }
 
         return nil
+}
+
+// execStatementsSeparately - SQL-i fərdi statement-lərə bölərək icra edir
+func execStatementsSeparately(db *sql.DB, sqlContent string) bool {
+        // Şərhləri və boş sətirləri təmizlə
+        statements := splitStatements(sqlContent)
+        success := true
+        for _, stmt := range statements {
+                stmt = strings.TrimSpace(stmt)
+                if stmt == "" || strings.HasPrefix(stmt, "--") {
+                        continue
+                }
+                if _, err := db.Exec(stmt); err != nil {
+                        log.Printf("Statement xətası: %v\nStatement: %.100s", err, stmt)
+                        success = false
+                }
+        }
+        return success
+}
+
+// splitStatements - SQL-i nöqtəli vergülə görə bölür (daxili string-ləri nəzərə alaraq)
+func splitStatements(sql string) []string {
+        var statements []string
+        var current strings.Builder
+        inString := false
+        stringChar := byte(0)
+
+        for i := 0; i < len(sql); i++ {
+                ch := sql[i]
+
+                if inString {
+                        current.WriteByte(ch)
+                        if ch == stringChar && (i+1 >= len(sql) || sql[i+1] != stringChar) {
+                                inString = false
+                        } else if ch == '\\' {
+                                // Escape character - skip next
+                                if i+1 < len(sql) {
+                                        i++
+                                        current.WriteByte(sql[i])
+                                }
+                        }
+                        continue
+                }
+
+                if ch == '\'' || ch == '"' {
+                        inString = true
+                        stringChar = ch
+                        current.WriteByte(ch)
+                        continue
+                }
+
+                if ch == '-' && i+1 < len(sql) && sql[i+1] == '-' {
+                        // Line comment - skip to end of line
+                        for i < len(sql) && sql[i] != '\n' {
+                                i++
+                        }
+                        continue
+                }
+
+                if ch == ';' {
+                        stmt := strings.TrimSpace(current.String())
+                        if stmt != "" {
+                                statements = append(statements, stmt)
+                        }
+                        current.Reset()
+                        continue
+                }
+
+                current.WriteByte(ch)
+        }
+
+        // Son statement
+        stmt := strings.TrimSpace(current.String())
+        if stmt != "" {
+                statements = append(statements, stmt)
+        }
+
+        return statements
 }
