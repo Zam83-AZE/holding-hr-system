@@ -4,15 +4,14 @@ WORKDIR /app
 
 RUN apk add --no-cache git ca-certificates
 
-COPY go.mod ./
-
-# Create go.sum with correct checksums
-RUN go mod tidy
-
+# Copy everything first
 COPY . .
 
-# Build from module root
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hr-system .
+# This creates go.sum with correct checksums
+RUN go mod tidy
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hr-system ./cmd/main.go
 
 FROM alpine:3.19
 
