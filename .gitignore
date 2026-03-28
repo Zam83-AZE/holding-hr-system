@@ -40,8 +40,8 @@ Thumbs.db
 # Docker
 .docker/
 
-# Test results
-test-results/
+# Test results (uncomment to ignore)
+# test-results/
 
 # Download folder (not part of project)
 download/
