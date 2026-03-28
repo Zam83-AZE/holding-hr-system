@@ -1,0 +1,118 @@
+{{define "content"}}
+<div class="space-y-6">
+    <!-- Tabs -->
+    <div class="bg-white rounded-xl shadow-sm">
+        <div class="border-b">
+            <nav class="flex -mb-px">
+                <a href="/employees?status=ACTIVE" 
+                   class="px-6 py-4 text-sm font-medium border-b-2 {{if eq .Status "ACTIVE"}}border-green-500 text-green-600{{else}}border-transparent text-gray-500 hover:text-gray-700{{end}}">
+                    <i class="fas fa-user-check mr-2"></i>
+                    Cari Əməkdaşlar
+                </a>
+                <a href="/employees?status=CANDIDATE" 
+                   class="px-6 py-4 text-sm font-medium border-b-2 {{if eq .Status "CANDIDATE"}}border-yellow-500 text-yellow-600{{else}}border-transparent text-gray-500 hover:text-gray-700{{end}}">
+                    <i class="fas fa-user-clock mr-2"></i>
+                    Yeni Namizədlər
+                </a>
+                <a href="/employees?status=TERMINATED" 
+                   class="px-6 py-4 text-sm font-medium border-b-2 {{if eq .Status "TERMINATED"}}border-red-500 text-red-600{{else}}border-transparent text-gray-500 hover:text-gray-700{{end}}">
+                    <i class="fas fa-user-times mr-2"></i>
+                    İşdən Çıxanlar
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Actions Bar -->
+        <div class="p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <!-- Company Filter for Holding HR -->
+                {{if or (eq .User.Role "ADMIN") (eq .User.Role "HOLDING_HR")}}
+                <select id="companyFilter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="filterByCompany()">
+                    <option value="">Bütün Şirkətlər</option>
+                    {{range .Companies}}
+                    <option value="{{.ID}}">{{.Name}}</option>
+                    {{end}}
+                </select>
+                {{end}}
+            </div>
+            
+            <a href="/employee/new" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                Yeni {{if eq .Status "CANDIDATE"}}Namizəd{{else}}İşçi{{end}}
+            </a>
+        </div>
+        
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Şəkil</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ad Soyad</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">FİN</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Şirkət</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vəzifə</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departament</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Əməliyyat</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {{range .Employees}}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                {{if .PhotoPath}}
+                                <img src="/uploads/{{.PhotoPath}}" class="w-10 h-10 rounded-full object-cover">
+                                {{else}}
+                                <i class="fas fa-user text-gray-400"></i>
+                                {{end}}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a href="/employee/card?id={{.ID}}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                {{.FirstName}} {{.LastName}}
+                            </a>
+                            {{if .FatherName}}<p class="text-xs text-gray-400">{{.FatherName}}</p>{{end}}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.FINCode}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.CompanyName}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{if .PositionName}}{{.PositionName}}{{else}}-{{end}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{if .DepartmentName}}{{.DepartmentName}}{{else}}-{{end}}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs rounded-full {{.Status | statusBadgeClass}}">
+                                {{.Status | statusLabel}}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <a href="/employee/card?id={{.ID}}" class="text-blue-600 hover:text-blue-800 mr-3">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2"></i>
+                            <p>Heç bir məlumat tapılmadı</p>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterByCompany() {
+    const companyID = document.getElementById('companyFilter').value;
+    const status = '{{.Status}}';
+    let url = '/employees?status=' + status;
+    if (companyID) {
+        url += '&company_id=' + companyID;
+    }
+    window.location.href = url;
+}
+</script>
+{{end}}

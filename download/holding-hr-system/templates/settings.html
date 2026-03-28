@@ -1,0 +1,104 @@
+{{define "content"}}
+<div class="space-y-6">
+    <!-- Tabs -->
+    <div class="bg-white rounded-xl shadow-sm">
+        <div class="border-b">
+            <nav class="flex -mb-px">
+                <a href="/settings" class="px-6 py-4 text-sm font-medium border-b-2 border-blue-500 text-blue-600">
+                    <i class="fas fa-building mr-2"></i>
+                    Şirkətlər
+                </a>
+                <a href="/settings/users" class="px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-users mr-2"></i>
+                    İstifadəçilər
+                </a>
+            </nav>
+        </div>
+        
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-800">Şirkətlərin Siyahısı</h3>
+                <button onclick="showAddCompanyModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i>
+                    Yeni Şirkət
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">VÖEN</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tip</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ünvan</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Əməliyyat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {{range .Companies}}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-medium text-gray-800">{{.Name}}</td>
+                            <td class="px-6 py-4 text-gray-500">{{.TaxID}}</td>
+                            <td class="px-6 py-4">
+                                {{if .IsHolding}}
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Holding</span>
+                                {{else}}
+                                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">Alt Şirkət</span>
+                                {{end}}
+                            </td>
+                            <td class="px-6 py-4 text-gray-500">{{.Address}}</td>
+                            <td class="px-6 py-4">
+                                <form action="/settings/company/delete" method="POST" class="inline">
+                                    <input type="hidden" name="id" value="{{.ID}}">
+                                    <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Silmək istədiyinizə əminsiniz?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Company Modal -->
+<div id="companyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold mb-4">Yeni Şirkət</h3>
+        <form action="/settings/company/create" method="POST">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Şirkət Adı *</label>
+                    <input type="text" name="name" class="w-full px-4 py-2 border rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">VÖEN</label>
+                    <input type="text" name="tax_id" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ünvan</label>
+                    <input type="text" name="address" class="w-full px-4 py-2 border rounded-lg">
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" name="is_holding" id="isHolding" class="mr-2">
+                    <label for="isHolding" class="text-sm text-gray-700">Bu holdinqdir</label>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" onclick="closeCompanyModal()" class="px-4 py-2 border rounded-lg">İmtina</button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showAddCompanyModal() { document.getElementById('companyModal').classList.remove('hidden'); }
+function closeCompanyModal() { document.getElementById('companyModal').classList.add('hidden'); }
+</script>
+{{end}}
