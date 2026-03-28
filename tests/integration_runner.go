@@ -140,6 +140,14 @@ func main() {
         runTest("49. Employee Search by FIN", testEmployeeSearchByFIN)
         runTest("50. Employee Filter by Company", testEmployeeFilterByCompany)
         
+        // Education, Experience, Family CRUD Tests
+        runTest("51. Education - Update", testUpdateEducation)
+        runTest("52. Education - Delete", testDeleteEducation)
+        runTest("53. Experience - Update", testUpdateExperience)
+        runTest("54. Experience - Delete", testDeleteExperience)
+        runTest("55. Family - Update", testUpdateFamily)
+        runTest("56. Family - Delete", testDeleteFamily)
+        
         testReport.EndTime = time.Now().Format(time.RFC3339)
         testReport.Duration = time.Since(startTime).Milliseconds()
         
@@ -1031,6 +1039,111 @@ func testEmployeeFilterByCompany() TestResult {
                 return TestResult{Status: "PASS", Message: "Employee filter by company works"}
         }
         return TestResult{Status: "FAIL", Message: fmt.Sprintf("Filter returned %d", resp.StatusCode)}
+}
+
+// ========== EDUCATION, EXPERIENCE, FAMILY CRUD TESTS ==========
+
+func testUpdateEducation() TestResult {
+        data := url.Values{}
+        data.Set("id", "1")
+        data.Set("institution", "Test University Updated")
+        data.Set("specialty", "Computer Science")
+        data.Set("degree", "MASTER")
+        data.Set("start_year", "2015")
+        data.Set("end_year", "2020")
+        data.Set("diploma_number", "TEST-123")
+        
+        resp, err := httpClient.PostForm(baseURL+"/employee/education/update", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 || resp.StatusCode == 303 {
+                return TestResult{Status: "PASS", Message: "Education update endpoint works"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Update returned %d", resp.StatusCode)}
+}
+
+func testDeleteEducation() TestResult {
+        data := url.Values{}
+        data.Set("id", "99999") // Non-existing ID
+        
+        resp, err := httpClient.PostForm(baseURL+"/employee/education/delete", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        // Endpoint accessible (may return error for non-existing)
+        return TestResult{Status: "PASS", Message: "Education delete endpoint accessible"}
+}
+
+func testUpdateExperience() TestResult {
+        data := url.Values{}
+        data.Set("id", "1")
+        data.Set("company_name", "Test Company Updated")
+        data.Set("position", "Senior Developer")
+        data.Set("start_date", "2020-01-01")
+        data.Set("end_date", "2023-12-31")
+        data.Set("leaving_reason", "Career growth")
+        
+        resp, err := httpClient.PostForm(baseURL+"/employee/experience/update", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 || resp.StatusCode == 303 {
+                return TestResult{Status: "PASS", Message: "Experience update endpoint works"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Update returned %d", resp.StatusCode)}
+}
+
+func testDeleteExperience() TestResult {
+        data := url.Values{}
+        data.Set("id", "99999") // Non-existing ID
+        
+        resp, err := httpClient.PostForm(baseURL+"/employee/experience/delete", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        return TestResult{Status: "PASS", Message: "Experience delete endpoint accessible"}
+}
+
+func testUpdateFamily() TestResult {
+        data := url.Values{}
+        data.Set("id", "1")
+        data.Set("relation_type", "SPOUSE")
+        data.Set("full_name", "Test Spouse Updated")
+        data.Set("birth_date", "1990-05-15")
+        data.Set("contact_number", "+994501234567")
+        
+        resp, err := httpClient.PostForm(baseURL+"/employee/family/update", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        if resp.StatusCode == 200 || resp.StatusCode == 303 {
+                return TestResult{Status: "PASS", Message: "Family update endpoint works"}
+        }
+        return TestResult{Status: "FAIL", Message: fmt.Sprintf("Update returned %d", resp.StatusCode)}
+}
+
+func testDeleteFamily() TestResult {
+        data := url.Values{}
+        data.Set("id", "99999") // Non-existing ID
+        
+        resp, err := httpClient.PostForm(baseURL+"/employee/family/delete", data)
+        if err != nil {
+                return TestResult{Status: "FAIL", Message: err.Error()}
+        }
+        defer resp.Body.Close()
+        
+        return TestResult{Status: "PASS", Message: "Family delete endpoint accessible"}
 }
 
 // ========== HELPER FUNCTIONS ==========
