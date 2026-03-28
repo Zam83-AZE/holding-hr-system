@@ -6,12 +6,17 @@ WORKDIR /app
 # Install dependencies
 RUN apk add --no-cache git ca-certificates tzdata
 
-# Copy go mod files
-COPY go.mod go.sum ./
-RUN go mod download
+# Copy go mod file
+COPY go.mod ./
+
+# Download dependencies
+RUN go mod download || true
 
 # Copy source code
 COPY . .
+
+# Download all dependencies and verify
+RUN go mod tidy
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hr-system ./cmd/main.go
