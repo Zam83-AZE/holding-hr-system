@@ -67,6 +67,7 @@ services:
         echo 'Running tests...' &&
         go run tests/integration_runner.go &&
         echo 'Pushing test results to GitHub...' &&
+        git config --global --add safe.directory /app &&
         git config --global user.email 'test@holding-hr.local' &&
         git config --global user.name 'Test Runner' &&
         git add test-results/ &&
