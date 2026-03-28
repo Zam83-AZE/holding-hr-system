@@ -1,0 +1,18 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Development files
+.vscode
+.idea
+
+# Test files
+*_test.go
+
+# Temporary files
+*.tmp
+*.log
