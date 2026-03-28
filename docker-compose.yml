@@ -65,23 +65,27 @@ services:
       - .:/app
       - test-results:/app/test-results
     working_dir: /app
-    command: >
-      sh -c "
-        apk add --no-cache curl bash git &&
-        rm -f .git/hooks/post-commit .git/hooks/pre-push .git/hooks/post-checkout .git/hooks/post-merge .git/hooks/pre-commit 2>/dev/null || true &&
-        echo 'Running tests...' &&
-        go run tests/integration_runner.go &&
-        echo 'Pushing results to GitHub...' &&
-        git config --global --add safe.directory /app &&
-        git config --global user.email 'test@holding-hr.local' &&
-        git config --global user.name 'Test Runner' &&
-        if [ -n \"$$GITHUB_TOKEN\" ]; then
-          git remote set-url origin \"https://$$GITHUB_TOKEN@github.com/Zam83-AZE/holding-hr-system.git\"
-        fi &&
-        git add test-results/ &&
-        git diff --staged --quiet || (git commit -m \"Test results - $$(date +%Y-%m-%d_%H-%M-%S)\" && git push origin main) &&
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache curl bash git
+        rm -f .git/hooks/post-commit .git/hooks/pre-push .git/hooks/post-checkout .git/hooks/post-merge .git/hooks/pre-commit 2>/dev/null || true
+        echo 'Running tests...'
+        go run tests/integration_runner.go
+        echo 'Pushing results to GitHub...'
+        git config --global --add safe.directory /app
+        git config --global user.email 'test@holding-hr.local'
+        git config --global user.name 'Test Runner'
+        if [ -n "$GITHUB_TOKEN" ]; then
+          git remote set-url origin "https://$GITHUB_TOKEN@github.com/Zam83-AZE/holding-hr-system.git"
+        fi
+        git fetch origin
+        git reset --hard origin/main
+        git add test-results/
+        TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+        git commit -m "Test results - $TIMESTAMP" || echo 'No changes to commit'
+        git push origin main
         echo 'Done!'
-      "
     networks:
       - hr-network
 
