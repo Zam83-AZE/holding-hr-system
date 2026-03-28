@@ -1,0 +1,257 @@
+{
+  "total_tests": 35,
+  "passed_tests": 35,
+  "failed_tests": 0,
+  "skipped_tests": 0,
+  "start_time": "2026-03-28T10:12:18Z",
+  "end_time": "2026-03-28T10:12:18Z",
+  "duration_ms": 355,
+  "results": [
+    {
+      "name": "01. Server Health Check",
+      "status": "PASS",
+      "message": "Server is running",
+      "duration_ms": 3,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "02. Login Page Access",
+      "status": "PASS",
+      "message": "Login page accessible",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "03. Login with Invalid Credentials",
+      "status": "PASS",
+      "message": "Invalid login correctly rejected",
+      "duration_ms": 0,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "04. Login with Admin Credentials",
+      "status": "PASS",
+      "message": "Admin login successful",
+      "duration_ms": 69,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "05. Dashboard Access After Login",
+      "status": "PASS",
+      "message": "Dashboard accessible",
+      "duration_ms": 2,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "06. Employees List - Active",
+      "status": "PASS",
+      "message": "Active employees list accessible",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "07. Employees List - Candidates",
+      "status": "PASS",
+      "message": "Candidates list accessible",
+      "duration_ms": 2,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "08. Employees List - Terminated",
+      "status": "PASS",
+      "message": "Terminated employees list accessible",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "09. Employee Search",
+      "status": "PASS",
+      "message": "Employee search works",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "10. Structure Page Access",
+      "status": "PASS",
+      "message": "Structure page accessible",
+      "duration_ms": 2,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "11. Settings Page Access (Admin)",
+      "status": "PASS",
+      "message": "Settings page accessible",
+      "duration_ms": 0,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "12. Users Page Access (Admin)",
+      "status": "PASS",
+      "message": "Users page accessible",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "13. New Employee Form Access",
+      "status": "PASS",
+      "message": "New employee form accessible",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "14. Create New Employee",
+      "status": "PASS",
+      "message": "Employee created successfully",
+      "duration_ms": 10,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "15. View Employee Card",
+      "status": "PASS",
+      "message": "Employee card accessible",
+      "duration_ms": 3,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "16. Update Employee",
+      "status": "PASS",
+      "message": "Employee updated successfully",
+      "duration_ms": 4,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "17. Add Education",
+      "status": "PASS",
+      "message": "Education added successfully",
+      "duration_ms": 6,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "18. Add Experience",
+      "status": "PASS",
+      "message": "Experience added successfully",
+      "duration_ms": 9,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "19. Add Family Member",
+      "status": "PASS",
+      "message": "Family member added successfully",
+      "duration_ms": 6,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "20. Create Department",
+      "status": "PASS",
+      "message": "Department created successfully",
+      "duration_ms": 4,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "21. Create Position",
+      "status": "PASS",
+      "message": "Position created successfully",
+      "duration_ms": 5,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "22. Hire Candidate",
+      "status": "PASS",
+      "message": "Hire candidate successful",
+      "duration_ms": 6,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "23. Terminate Employee",
+      "status": "PASS",
+      "message": "Terminate employee successful",
+      "duration_ms": 4,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "24. Reactivate Employee",
+      "status": "PASS",
+      "message": "Reactivate employee successful",
+      "duration_ms": 3,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "25. Delete Employee",
+      "status": "PASS",
+      "message": "Delete endpoint accessible",
+      "duration_ms": 4,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "26. Logout",
+      "status": "PASS",
+      "message": "Logout successful",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "27. Access Protected Page After Logout",
+      "status": "PASS",
+      "message": "Correctly redirected to login after logout",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "28. Login as Holding HR",
+      "status": "PASS",
+      "message": "Holding HR login successful",
+      "duration_ms": 110,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "29. Holding HR - View All Companies",
+      "status": "PASS",
+      "message": "Holding HR employee list accessible",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "30. Holding HR - Logout",
+      "status": "PASS",
+      "message": "Logout successful",
+      "duration_ms": 0,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "31. Login as Subsidiary HR",
+      "status": "PASS",
+      "message": "Subsidiary HR login successful",
+      "duration_ms": 73,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "32. Subsidiary HR - Limited Access",
+      "status": "PASS",
+      "message": "Subsidiary HR correctly restricted",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "33. Subsidiary HR - Logout",
+      "status": "PASS",
+      "message": "Logout successful",
+      "duration_ms": 0,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "34. API Departments Endpoint",
+      "status": "PASS",
+      "message": "API departments endpoint works",
+      "duration_ms": 1,
+      "timestamp": "2026-03-28T10:12:18Z"
+    },
+    {
+      "name": "35. API Positions Endpoint",
+      "status": "PASS",
+      "message": "API positions endpoint works",
+      "duration_ms": 0,
+      "timestamp": "2026-03-28T10:12:18Z"
+    }
+  ],
+  "summary": "Total: 35, Passed: 35, Failed: 0, Skipped: 0"
+}

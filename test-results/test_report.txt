@@ -1,0 +1,56 @@
+============================================================
+HOLDING HR SYSTEM - TEST REPORT
+============================================================
+
+Start Time: 2026-03-28T10:12:18Z
+End Time:   2026-03-28T10:12:18Z
+Duration:   355 ms
+
+Total Tests:  35
+Passed:       35
+Failed:       0
+Skipped:      0
+
+------------------------------------------------------------
+DETAILED RESULTS
+------------------------------------------------------------
+
+[✓] 01. Server Health Check (3 ms)
+[✓] 02. Login Page Access (1 ms)
+[✓] 03. Login with Invalid Credentials (0 ms)
+[✓] 04. Login with Admin Credentials (69 ms)
+[✓] 05. Dashboard Access After Login (2 ms)
+[✓] 06. Employees List - Active (1 ms)
+[✓] 07. Employees List - Candidates (2 ms)
+[✓] 08. Employees List - Terminated (1 ms)
+[✓] 09. Employee Search (1 ms)
+[✓] 10. Structure Page Access (2 ms)
+[✓] 11. Settings Page Access (Admin) (0 ms)
+[✓] 12. Users Page Access (Admin) (1 ms)
+[✓] 13. New Employee Form Access (1 ms)
+[✓] 14. Create New Employee (10 ms)
+[✓] 15. View Employee Card (3 ms)
+[✓] 16. Update Employee (4 ms)
+[✓] 17. Add Education (6 ms)
+[✓] 18. Add Experience (9 ms)
+[✓] 19. Add Family Member (6 ms)
+[✓] 20. Create Department (4 ms)
+[✓] 21. Create Position (5 ms)
+[✓] 22. Hire Candidate (6 ms)
+[✓] 23. Terminate Employee (4 ms)
+[✓] 24. Reactivate Employee (3 ms)
+[✓] 25. Delete Employee (4 ms)
+[✓] 26. Logout (1 ms)
+[✓] 27. Access Protected Page After Logout (1 ms)
+[✓] 28. Login as Holding HR (110 ms)
+[✓] 29. Holding HR - View All Companies (1 ms)
+[✓] 30. Holding HR - Logout (0 ms)
+[✓] 31. Login as Subsidiary HR (73 ms)
+[✓] 32. Subsidiary HR - Limited Access (1 ms)
+[✓] 33. Subsidiary HR - Logout (0 ms)
+[✓] 34. API Departments Endpoint (1 ms)
+[✓] 35. API Positions Endpoint (0 ms)
+
+============================================================
+SUMMARY: Total: 35, Passed: 35, Failed: 0, Skipped: 0
+============================================================
