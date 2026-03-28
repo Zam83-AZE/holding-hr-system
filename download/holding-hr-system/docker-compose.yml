@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -47,7 +45,6 @@ services:
     networks:
       - hr-network
 
-  # Test runner service
   test:
     image: golang:1.21-alpine
     container_name: holding-hr-test
