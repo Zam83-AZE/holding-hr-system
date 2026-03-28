@@ -714,7 +714,7 @@ func (h *EmployeeHandler) AddCertificate(w http.ResponseWriter, r *http.Request)
 		cert.ExpiryDate = &t
 	}
 	h.employeeRepo.AddCertificate(cert)
-	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d", employeeID), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d&tab=certificates", employeeID), http.StatusSeeOther)
 }
 
 // UpdateCertificate - Sertifikat yenilə
@@ -743,7 +743,7 @@ func (h *EmployeeHandler) UpdateCertificate(w http.ResponseWriter, r *http.Reque
 		cert.ExpiryDate = &t
 	}
 	h.employeeRepo.UpdateCertificate(cert)
-	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d", employeeID), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d&tab=certificates", employeeID), http.StatusSeeOther)
 }
 
 // DeleteCertificate - Sertifikat sil
@@ -755,7 +755,7 @@ func (h *EmployeeHandler) DeleteCertificate(w http.ResponseWriter, r *http.Reque
 	id, _ := strconv.Atoi(r.FormValue("id"))
 	employeeID, _ := strconv.Atoi(r.FormValue("employee_id"))
 	h.employeeRepo.DeleteCertificate(id)
-	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d", employeeID), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d&tab=certificates", employeeID), http.StatusSeeOther)
 }
 
 // GetWorkLocations - API: İş yerlərini JSON kimi qaytar
