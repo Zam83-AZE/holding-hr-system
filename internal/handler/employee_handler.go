@@ -46,7 +46,8 @@ func (h *EmployeeHandler) ShowDashboard(w http.ResponseWriter, r *http.Request) 
                 return
         }
 
-        companies, _ := h.companyRepo.GetAll()
+        // İerarxik şirkət siyahısı
+        companies, _ := h.companyRepo.GetWithHierarchy()
 
         data := PageData{
                 Title:     "Dashboard",
@@ -72,11 +73,33 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
         urlCompanyID := r.URL.Query().Get("company_id")
         var selectedCompanyID int
         var selectedCompanyName string
+        var subCompanies []models.Company
+        var parentCompany *models.Company
+
         if urlCompanyID != "" {
                 if cid, err := strconv.Atoi(urlCompanyID); err == nil && cid > 0 {
                         if user.Role == models.RoleAdmin || user.Role == models.RoleHoldingHR {
-                                companyFilter = &cid
                                 selectedCompanyID = cid
+
+                                // Alt-şirkətləri yoxla
+                                subs, err := h.companyRepo.GetSubCompanies(cid)
+                                if err == nil && len(subs) > 0 {
+                                        subCompanies = subs
+                                        // Alt-şirkətlər varsa, filteri bu şirkət + alt-şirkətlərə genişləndir
+                                        // (birbaşa bu şirkətin işçilərini də göstər)
+                                        companyFilter = &cid
+                                } else {
+                                        companyFilter = &cid
+                                }
+
+                                // Ana şirkəti tap (alt-şirkətdənmisiniz?)
+                                comp, err := h.companyRepo.GetByID(cid)
+                                if err == nil && comp != nil {
+                                        selectedCompanyName = comp.Name
+                                        if comp.ParentID != nil {
+                                                parentCompany, _ = h.companyRepo.GetByID(*comp.ParentID)
+                                        }
+                                }
                         }
                 }
         }
@@ -87,15 +110,7 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
                 return
         }
 
-        // Şirkət adını tap
-        if selectedCompanyID > 0 {
-                comp, err := h.companyRepo.GetByID(selectedCompanyID)
-                if err == nil && comp != nil {
-                        selectedCompanyName = comp.Name
-                }
-        }
-
-        companies, _ := h.companyRepo.GetAll()
+        companies, _ := h.companyRepo.GetWithHierarchy()
 
         // Seçilmiş şirkətin departamentlərini gətir
         var departments []models.Department
@@ -108,10 +123,17 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
                 User:                 user,
                 Employees:            employees,
                 Companies:            companies,
+                SubCompanies:         subCompanies,
                 Departments:          departments,
                 Status:               string(status),
                 SelectedCompany:      selectedCompanyID,
                 SelectedCompanyName:  selectedCompanyName,
+        }
+
+        // Alt-şirkətdənmisinizsə, ana şirkət adını da title-a əlavə et
+        if parentCompany != nil {
+                data.ParentCompanyName = parentCompany.Name
+                data.ParentCompanyID = parentCompany.ID
         }
 
         // Şirkət adını title-a əlavə et

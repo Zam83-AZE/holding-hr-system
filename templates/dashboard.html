@@ -111,18 +111,60 @@
                 </div>
             </div>
 
-            <!-- Companies List -->
+            <!-- Companies List - Hierarchical -->
             {{if .Companies}}
             <div class="bg-white p-6 rounded-lg shadow">
                 <h3 class="text-lg font-semibold mb-4">Şirkətlər</h3>
-                <div class="grid grid-cols-4 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     {{range .Companies}}
-                    <a href="/employees?status=ACTIVE&company_id={{.ID}}" class="p-4 border rounded-lg hover:border-blue-500 hover:bg-blue-50 text-center">
-                        <p class="font-medium">{{.Name}}</p>
-                        <p class="text-xs text-gray-500">{{if .IsHolding}}Holding{{else}}Alt Şirkət{{end}}</p>
+                    {{template "companyCard" .}}
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+
+            <!-- Sub-template for company card -->
+            {{define "companyCard"}}
+            <div class="border rounded-lg hover:border-blue-400 hover:shadow-md transition overflow-hidden">
+                <!-- Company Header -->
+                <a href="/employees?status=ACTIVE&company_id={{.ID}}" class="block p-4 hover:bg-blue-50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center {{if eq .CompanyType "HOLDING"}}bg-amber-100{{else if eq .CompanyType "CONSTRUCTION"}}bg-orange-100{{else if eq .CompanyType "LOGISTICS"}}bg-blue-100{{else if eq .CompanyType "HOTEL"}}bg-purple-100{{else if eq .CompanyType "RESTAURANT_CHAIN"}}bg-red-100{{else if eq .CompanyType "RESTAURANT"}}bg-rose-100{{else if eq .CompanyType "AGRICULTURE"}}bg-green-100{{else if eq .CompanyType "PRODUCTION"}}bg-yellow-100{{else if eq .CompanyType "SPORTS"}}bg-indigo-100{{else}}bg-gray-100{{end}}">
+                            <i class="{{if eq .CompanyType "HOLDING"}}fas fa-crown text-amber-600{{else if eq .CompanyType "CONSTRUCTION"}}fas fa-hard-hat text-orange-600{{else if eq .CompanyType "LOGISTICS"}}fas fa-truck text-blue-600{{else if eq .CompanyType "HOTEL"}}fas fa-hotel text-purple-600{{else if eq .CompanyType "RESTAURANT_CHAIN"}}fas fa-utensils text-red-600{{else if eq .CompanyType "RESTAURANT"}}fas fa-utensils text-rose-600{{else if eq .CompanyType "AGRICULTURE"}}fas fa-leaf text-green-600{{else if eq .CompanyType "PRODUCTION"}}fas fa-industry text-yellow-600{{else if eq .CompanyType "SPORTS"}}fas fa-medal text-indigo-600{{else}}fas fa-building text-gray-600{{end}}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-medium text-sm truncate">{{.Name}}</p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-xs text-gray-500">
+                                    <i class="fas fa-users mr-1"></i>{{.EmployeeCount}} işçi
+                                </span>
+                                {{if .SubCompanies}}
+                                <span class="text-xs text-blue-500">
+                                    <i class="fas fa-sitemap mr-1"></i>{{len .SubCompanies}} filial
+                                </span>
+                                {{end}}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400 text-sm"></i>
+                    </div>
+                </a>
+
+                <!-- Sub-companies (if any) -->
+                {{if .SubCompanies}}
+                <div class="border-t border-gray-100 bg-gray-50 px-4 py-2 space-y-1">
+                    {{range .SubCompanies}}
+                    <a href="/employees?status=ACTIVE&company_id={{.ID}}" class="flex items-center justify-between px-3 py-1.5 rounded hover:bg-white transition group">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-6 h-6 rounded flex items-center justify-center bg-rose-100 flex-shrink-0">
+                                <i class="fas fa-utensils text-rose-500 text-xs"></i>
+                            </div>
+                            <span class="text-xs text-gray-600 truncate group-hover:text-blue-600">{{.Name}}</span>
+                        </div>
+                        <span class="text-xs text-gray-400 flex-shrink-0">{{.EmployeeCount}}</span>
                     </a>
                     {{end}}
                 </div>
+                {{end}}
             </div>
             {{end}}
         </div>
