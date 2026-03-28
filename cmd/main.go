@@ -11,8 +11,6 @@ import (
         "html/template"
         "log"
         "net/http"
-        "os"
-        "path/filepath"
         "strings"
         "time"
 
@@ -248,23 +246,8 @@ func loadTemplates() (*template.Template, error) {
                 },
         }
 
-        // Template-ləri yüklə
-        tmpl := template.New("").Funcs(funcMap)
-
-        // Bütün template fayllarını gəz
-        err := filepath.Walk("templates", func(path string, info os.FileInfo, err error) error {
-                if err != nil {
-                        return err
-                }
-                if !info.IsDir() && filepath.Ext(path) == ".html" {
-                        _, err = tmpl.ParseFiles(path)
-                        if err != nil {
-                                return err
-                        }
-                }
-                return nil
-        })
-
+        // Template-ləri yüklə - ParseGlob ilə
+        tmpl, err := template.New("").Funcs(funcMap).ParseGlob("templates/*.html")
         if err != nil {
                 return nil, err
         }
