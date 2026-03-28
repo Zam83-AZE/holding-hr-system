@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: holding-hr-app
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USER=hruser
+      - DB_PASSWORD=hrpass123
+      - DB_NAME=holding_hr
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - SERVER_PORT=8080
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - ./static/uploads:/app/static/uploads
+    restart: unless-stopped
+    networks:
+      - hr-network
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: holding-hr-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass123
+      - MYSQL_USER=hruser
+      - MYSQL_PASSWORD=hrpass123
+      - MYSQL_DATABASE=holding_hr
+    ports:
+      - "3306:3306"
+    volumes:
+      - hr-mariadb-data:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - hr-network
+
+volumes:
+  hr-mariadb-data:
+
+networks:
+  hr-network:
+    driver: bridge
