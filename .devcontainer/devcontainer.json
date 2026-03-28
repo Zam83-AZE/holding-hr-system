@@ -1,0 +1,27 @@
+{
+    "name": "Holding HR System",
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "forwardPorts": [8080, 3306],
+    "portsAttributes": {
+        "8080": {
+            "label": "HR App",
+            "onAutoForward": "openBrowser"
+        },
+        "3306": {
+            "label": "MariaDB",
+            "onAutoForward": "silent"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "remote.autoForwardPorts": true,
+                "remote.autoForwardPortsSource": "process"
+            }
+        }
+    },
+    "postStartCommand": "docker compose up -d",
+    "remoteUser": "root"
+}
