@@ -174,12 +174,26 @@
                     <div class="space-y-3">
                         {{range .Education}}
                         <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
-                            <p class="font-semibold text-gray-800">{{.Institution}}</p>
-                            <p class="text-sm text-gray-600 mt-1">{{.Specialty}}</p>
-                            <div class="flex items-center gap-4 mt-2">
-                                <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">{{.Degree}}</span>
-                                <span class="text-xs text-gray-400">{{.StartYear}} – {{.EndYear}}</span>
-                                {{if .DiplomaNumber}}<span class="text-xs text-gray-400">Diplom: {{.DiplomaNumber}}</span>{{end}}
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">{{.Institution}}</p>
+                                    <p class="text-sm text-gray-600 mt-1">{{.Specialty}}</p>
+                                    <div class="flex items-center gap-4 mt-2">
+                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">{{.Degree}}</span>
+                                        <span class="text-xs text-gray-400">{{.StartYear}} – {{.EndYear}}</span>
+                                        {{if .DiplomaNumber}}<span class="text-xs text-gray-400">Diplom: {{.DiplomaNumber}}</span>{{end}}
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 ml-4">
+                                    <button onclick="editEducation({{.ID}}, '{{.Institution}}', '{{.Specialty}}', '{{.Degree}}', {{.StartYear}}, {{.EndYear}}, '{{.DiplomaNumber}}')" 
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteEducation({{.ID}})" 
+                                            class="text-red-600 hover:text-red-800 p-1" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         {{else}}
@@ -202,15 +216,29 @@
                     <div class="space-y-3">
                         {{range .Experience}}
                         <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
-                            <p class="font-semibold text-gray-800">{{.CompanyName}}</p>
-                            <p class="text-sm text-blue-600 mt-1">{{.Position}}</p>
-                            <p class="text-xs text-gray-400 mt-2">
-                                <i class="fas fa-calendar mr-1"></i>
-                                {{.StartDate | formatDate}} – {{.EndDate | formatDate}}
-                            </p>
-                            {{if .LeavingReason}}
-                            <p class="text-xs text-gray-500 mt-1">Ayrılma: {{.LeavingReason}}</p>
-                            {{end}}
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">{{.CompanyName}}</p>
+                                    <p class="text-sm text-blue-600 mt-1">{{.Position}}</p>
+                                    <p class="text-xs text-gray-400 mt-2">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        {{.StartDate | formatDate}} – {{.EndDate | formatDate}}
+                                    </p>
+                                    {{if .LeavingReason}}
+                                    <p class="text-xs text-gray-500 mt-1">Ayrılma: {{.LeavingReason}}</p>
+                                    {{end}}
+                                </div>
+                                <div class="flex gap-2 ml-4">
+                                    <button onclick="editExperience({{.ID}}, '{{.CompanyName}}', '{{.Position}}', '{{.StartDate | formatDateInput}}', '{{.EndDate | formatDateInput}}', '{{.LeavingReason}}')" 
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteExperience({{.ID}})" 
+                                            class="text-red-600 hover:text-red-800 p-1" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         {{else}}
                         <div class="text-center py-12 text-gray-400">
@@ -232,16 +260,30 @@
                     <div class="grid grid-cols-2 gap-4">
                         {{range .Family}}
                         <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
-                            <p class="font-semibold text-gray-800">{{.FullName}}</p>
-                            <p class="text-sm text-blue-600 mt-1">
-                                {{if eq .RelationType "FATHER"}}Ata
-                                {{else if eq .RelationType "MOTHER"}}Ana
-                                {{else if eq .RelationType "SPOUSE"}}Həyat yoldaşı
-                                {{else if eq .RelationType "CHILD"}}Övlad
-                                {{else}}Digər{{end}}
-                            </p>
-                            {{if .BirthDate}}<p class="text-xs text-gray-400 mt-1"><i class="fas fa-birthday-cake mr-1"></i>{{.BirthDate | formatDate}}</p>{{end}}
-                            {{if .ContactNumber}}<p class="text-xs text-gray-400 mt-1"><i class="fas fa-phone mr-1"></i>{{.ContactNumber}}</p>{{end}}
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800">{{.FullName}}</p>
+                                    <p class="text-sm text-blue-600 mt-1">
+                                        {{if eq .RelationType "FATHER"}}Ata
+                                        {{else if eq .RelationType "MOTHER"}}Ana
+                                        {{else if eq .RelationType "SPOUSE"}}Həyat yoldaşı
+                                        {{else if eq .RelationType "CHILD"}}Övlad
+                                        {{else}}Digər{{end}}
+                                    </p>
+                                    {{if .BirthDate}}<p class="text-xs text-gray-400 mt-1"><i class="fas fa-birthday-cake mr-1"></i>{{.BirthDate | formatDate}}</p>{{end}}
+                                    {{if .ContactNumber}}<p class="text-xs text-gray-400 mt-1"><i class="fas fa-phone mr-1"></i>{{.ContactNumber}}</p>{{end}}
+                                </div>
+                                <div class="flex gap-2 ml-2">
+                                    <button onclick="editFamily({{.ID}}, '{{.RelationType}}', '{{.FullName}}', '{{.BirthDate | formatDateInput}}', '{{.ContactNumber}}')" 
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteFamily({{.ID}})" 
+                                            class="text-red-600 hover:text-red-800 p-1" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         {{else}}
                         <div class="col-span-2 text-center py-12 text-gray-400">
@@ -478,49 +520,225 @@
 
     <script>
     // ===== TAB SİSTEMİ =====
-    // CSS class ilə idarə olunur: .tab-panel { display:none } / .tab-panel.active { display:block }
     function showTab(name, clickedBtn) {
-        // Bütün panelləri gizlət
-        document.querySelectorAll('.tab-panel').forEach(function(p) {
-            p.classList.remove('active');
-        });
-        // Seçilən paneli göstər
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
         var panel = document.getElementById('tab-' + name);
         if (panel) panel.classList.add('active');
-
-        // Bütün tab düymələrindən active sil
-        document.querySelectorAll('.tab-btn').forEach(function(b) {
-            b.classList.remove('active');
-        });
-        // Kliklənən düyməyə active əlavə et
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
         if (clickedBtn) clickedBtn.classList.add('active');
     }
 
     // ===== MODAL SİSTEMİ =====
-    function openModal(id) {
-        var m = document.getElementById(id);
-        if (m) m.classList.add('open');
-    }
-    function closeModal(id) {
-        var m = document.getElementById(id);
-        if (m) m.classList.remove('open');
-    }
+    function openModal(id) { var m = document.getElementById(id); if (m) m.classList.add('open'); }
+    function closeModal(id) { var m = document.getElementById(id); if (m) m.classList.remove('open'); }
 
-    // Overlay-ə klik edəndə bağla
     document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
-        overlay.addEventListener('click', function(e) {
-            if (e.target === overlay) overlay.classList.remove('open');
-        });
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('open'); });
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m) { m.classList.remove('open'); });
     });
 
-    // ESC ilə bağla
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
-                m.classList.remove('open');
-            });
+    // ===== EDUCATION CRUD =====
+    function editEducation(id, institution, specialty, degree, startYear, endYear, diplomaNumber) {
+        document.getElementById('editEduId').value = id;
+        document.getElementById('editEduInstitution').value = institution || '';
+        document.getElementById('editEduSpecialty').value = specialty || '';
+        document.getElementById('editEduDegree').value = degree || 'BACHELOR';
+        document.getElementById('editEduStartYear').value = startYear || '';
+        document.getElementById('editEduEndYear').value = endYear || '';
+        document.getElementById('editEduDiplomaNumber').value = diplomaNumber || '';
+        openModal('editEduModal');
+    }
+
+    function deleteEducation(id) {
+        if (confirm('Bu təhsil məlumatını silmək istəyirsiniz?')) {
+            var form = document.getElementById('deleteEduForm');
+            form.querySelector('input[name="id"]').value = id;
+            form.submit();
         }
-    });
+    }
+
+    // ===== EXPERIENCE CRUD =====
+    function editExperience(id, companyName, position, startDate, endDate, leavingReason) {
+        document.getElementById('editExpId').value = id;
+        document.getElementById('editExpCompanyName').value = companyName || '';
+        document.getElementById('editExpPosition').value = position || '';
+        document.getElementById('editExpStartDate').value = startDate || '';
+        document.getElementById('editExpEndDate').value = endDate || '';
+        document.getElementById('editExpLeavingReason').value = leavingReason || '';
+        openModal('editExpModal');
+    }
+
+    function deleteExperience(id) {
+        if (confirm('Bu iş təcrübəsini silmək istəyirsiniz?')) {
+            var form = document.getElementById('deleteExpForm');
+            form.querySelector('input[name="id"]').value = id;
+            form.submit();
+        }
+    }
+
+    // ===== FAMILY CRUD =====
+    function editFamily(id, relationType, fullName, birthDate, contactNumber) {
+        document.getElementById('editFamId').value = id;
+        document.getElementById('editFamRelationType').value = relationType || '';
+        document.getElementById('editFamFullName').value = fullName || '';
+        document.getElementById('editFamBirthDate').value = birthDate || '';
+        document.getElementById('editFamContactNumber').value = contactNumber || '';
+        openModal('editFamModal');
+    }
+
+    function deleteFamily(id) {
+        if (confirm('Bu ailə üzvünü silmək istəyirsiniz?')) {
+            var form = document.getElementById('deleteFamForm');
+            form.querySelector('input[name="id"]').value = id;
+            form.submit();
+        }
+    }
     </script>
+
+    <!-- Delete Forms (Hidden) -->
+    <form id="deleteEduForm" action="/employee/education/delete" method="POST" style="display:none;">
+        <input type="hidden" name="id" value="">
+    </form>
+    <form id="deleteExpForm" action="/employee/experience/delete" method="POST" style="display:none;">
+        <input type="hidden" name="id" value="">
+    </form>
+    <form id="deleteFamForm" action="/employee/family/delete" method="POST" style="display:none;">
+        <input type="hidden" name="id" value="">
+    </form>
+
+    <!-- Edit Education Modal -->
+    <div id="editEduModal" class="modal-overlay">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold"><i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Təhsili Redaktə Et</h3>
+                <button onclick="closeModal('editEduModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <form action="/employee/education/update" method="POST">
+                <input type="hidden" id="editEduId" name="id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Təhsil müəssisəsi <span class="text-red-500">*</span></label>
+                        <input type="text" id="editEduInstitution" name="institution" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">İxtisas</label>
+                        <input type="text" id="editEduSpecialty" name="specialty" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Təhsil dərəcəsi</label>
+                        <select id="editEduDegree" name="degree" class="w-full px-3 py-2 border rounded-lg">
+                            <option value="BACHELOR">Bakalavr</option>
+                            <option value="MASTER">Magistr</option>
+                            <option value="PHD">PhD</option>
+                            <option value="SECONDARY">Orta təhsil</option>
+                            <option value="VOCATIONAL">Peşə təhsili</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Başlama ili</label>
+                            <input type="number" id="editEduStartYear" name="start_year" class="w-full px-3 py-2 border rounded-lg" min="1970" max="2030">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Bitmə ili</label>
+                            <input type="number" id="editEduEndYear" name="end_year" class="w-full px-3 py-2 border rounded-lg" min="1970" max="2030">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Diplom nömrəsi</label>
+                        <input type="text" id="editEduDiplomaNumber" name="diploma_number" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('editEduModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Yadda Saxla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Experience Modal -->
+    <div id="editExpModal" class="modal-overlay">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold"><i class="fas fa-briefcase mr-2 text-blue-500"></i>Təcrübəni Redaktə Et</h3>
+                <button onclick="closeModal('editExpModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <form action="/employee/experience/update" method="POST">
+                <input type="hidden" id="editExpId" name="id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Şirkət adı <span class="text-red-500">*</span></label>
+                        <input type="text" id="editExpCompanyName" name="company_name" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Vəzifə <span class="text-red-500">*</span></label>
+                        <input type="text" id="editExpPosition" name="position" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Başlama tarixi</label>
+                            <input type="date" id="editExpStartDate" name="start_date" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Bitmə tarixi</label>
+                            <input type="date" id="editExpEndDate" name="end_date" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Ayrılma səbəbi</label>
+                        <textarea id="editExpLeavingReason" name="leaving_reason" rows="2" class="w-full px-3 py-2 border rounded-lg"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('editExpModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Yadda Saxla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Family Modal -->
+    <div id="editFamModal" class="modal-overlay">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold"><i class="fas fa-heart mr-2 text-blue-500"></i>Ailə Üzvünü Redaktə Et</h3>
+                <button onclick="closeModal('editFamModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            </div>
+            <form action="/employee/family/update" method="POST">
+                <input type="hidden" id="editFamId" name="id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Ad Soyad <span class="text-red-500">*</span></label>
+                        <input type="text" id="editFamFullName" name="full_name" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Əlaqə növü <span class="text-red-500">*</span></label>
+                        <select id="editFamRelationType" name="relation_type" class="w-full px-3 py-2 border rounded-lg" required>
+                            <option value="FATHER">Ata</option>
+                            <option value="MOTHER">Ana</option>
+                            <option value="SPOUSE">Həyat yoldaşı</option>
+                            <option value="CHILD">Övlad</option>
+                            <option value="OTHER">Digər</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Doğum tarixi</label>
+                        <input type="date" id="editFamBirthDate" name="birth_date" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Əlaqə nömrəsi</label>
+                        <input type="text" id="editFamContactNumber" name="contact_number" class="w-full px-3 py-2 border rounded-lg" placeholder="+994501234567">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('editFamModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Yadda Saxla</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

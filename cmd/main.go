@@ -84,8 +84,14 @@ func main() {
 
         // Əlavə məlumat route-ları
         mux.HandleFunc("/employee/education/add", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.AddEducation))
+        mux.HandleFunc("/employee/education/update", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.UpdateEducation))
+        mux.HandleFunc("/employee/education/delete", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.DeleteEducation))
         mux.HandleFunc("/employee/experience/add", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.AddExperience))
+        mux.HandleFunc("/employee/experience/update", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.UpdateExperience))
+        mux.HandleFunc("/employee/experience/delete", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.DeleteExperience))
         mux.HandleFunc("/employee/family/add", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.AddFamily))
+        mux.HandleFunc("/employee/family/update", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.UpdateFamily))
+        mux.HandleFunc("/employee/family/delete", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.DeleteFamily))
 
         // API route-ları
         mux.HandleFunc("/api/departments", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetDepartmentsByCompany))
