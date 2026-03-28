@@ -65,7 +65,7 @@ services:
         echo 'Waiting for app to start...' &&
         sleep 15 &&
         echo 'Running tests...' &&
-        go run tests/integration_test.go
+        go run tests/integration_runner.go
       "
     networks:
       - hr-network
