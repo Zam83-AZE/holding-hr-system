@@ -1,101 +1,179 @@
-{{define "content"}}
-<div class="space-y-6">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Total Employees -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">Cari İşçilər</p>
-                    <p class="text-3xl font-bold text-gray-800">{{.Stats.ActiveEmployees}}</p>
-                </div>
-                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user-check text-green-600 text-xl"></i>
-                </div>
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} | Holding HR System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-blue-900 text-white flex-shrink-0 flex flex-col">
+            <div class="p-4 border-b border-blue-800">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-building mr-2"></i>
+                    Holding HR
+                </h1>
             </div>
-            <p class="text-xs text-gray-400 mt-2">Bu ay qəbul: {{.Stats.ThisMonthHired}}</p>
-        </div>
+            
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="/" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition bg-blue-800">
+                    <i class="fas fa-home w-5 mr-3"></i>
+                    Dashboard
+                </a>
+                
+                <a href="/employees" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
+                    <i class="fas fa-users w-5 mr-3"></i>
+                    Kadr Uçotu
+                </a>
+                
+                <a href="/structure" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
+                    <i class="fas fa-sitemap w-5 mr-3"></i>
+                    Struktur
+                </a>
+                
+                {{if eq .User.Role "ADMIN"}}
+                <a href="/settings" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
+                    <i class="fas fa-cog w-5 mr-3"></i>
+                    Ayarlar
+                </a>
+                {{end}}
+            </nav>
+            
+            <!-- User info -->
+            <div class="p-4 border-t border-blue-800">
+                <div class="text-sm">
+                    <p class="font-medium">{{.User.Email}}</p>
+                    <p class="text-blue-300 text-xs">{{.User.Role | roleLabel}}</p>
+                </div>
+                <a href="/auth/logout" class="mt-2 flex items-center text-sm text-blue-300 hover:text-white">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Çıxış
+                </a>
+            </div>
+        </aside>
         
-        <!-- Candidates -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">Namizədlər</p>
-                    <p class="text-3xl font-bold text-gray-800">{{.Stats.Candidates}}</p>
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Top bar -->
+            <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800">{{.Title}}</h2>
+                
+                <!-- Search -->
+                <form action="/employee/search" method="GET" class="flex items-center">
+                    <input type="text" name="q" placeholder="Axtarış (FİN, Ad, Soyad)..." 
+                           class="px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </header>
+            
+            <!-- Page content -->
+            <div class="p-6">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- Active Employees -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Cari İşçilər</p>
+                                <p class="text-3xl font-bold text-gray-800">{{.Stats.ActiveEmployees}}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-check text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Bu ay qəbul: {{.Stats.ThisMonthHired}}</p>
+                    </div>
+                    
+                    <!-- Candidates -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Namizədlər</p>
+                                <p class="text-3xl font-bold text-gray-800">{{.Stats.Candidates}}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-clock text-yellow-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Gözləyən namizədlər</p>
+                    </div>
+                    
+                    <!-- Terminated -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">İşdən Çıxanlar</p>
+                                <p class="text-3xl font-bold text-gray-800">{{.Stats.Terminated}}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-times text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Bu ay: {{.Stats.ThisMonthTerminated}}</p>
+                    </div>
+                    
+                    <!-- Companies -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Şirkətlər</p>
+                                <p class="text-3xl font-bold text-gray-800">{{.Stats.TotalCompanies}}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-building text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Holding struktur</p>
+                    </div>
                 </div>
-                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user-clock text-yellow-600 text-xl"></i>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Tez Hərəkətlər</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <a href="/employee/new" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                            <i class="fas fa-user-plus text-blue-600 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Yeni Namizəd</span>
+                        </a>
+                        <a href="/employees?status=CANDIDATE" class="flex flex-col items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
+                            <i class="fas fa-clipboard-list text-yellow-600 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Namizədlər</span>
+                        </a>
+                        <a href="/employees?status=ACTIVE" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                            <i class="fas fa-users text-green-600 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700">İşçilər</span>
+                        </a>
+                        <a href="/structure" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+                            <i class="fas fa-sitemap text-purple-600 text-2xl mb-2"></i>
+                            <span class="text-sm font-medium text-gray-700">Struktur</span>
+                        </a>
+                    </div>
                 </div>
+                
+                <!-- Company List for Holding HR -->
+                {{if or (eq .User.Role "ADMIN") (eq .User.Role "HOLDING_HR")}}
+                {{if .Companies}}
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Şirkətlər</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {{range .Companies}}
+                        <a href="/employees?status=ACTIVE&company_id={{.ID}}" 
+                           class="p-4 border rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-center">
+                            <p class="font-medium text-gray-800">{{.Name}}</p>
+                            <p class="text-xs text-gray-500">{{if .IsHolding}}Holding{{else}}Alt Şirkət{{end}}</p>
+                        </a>
+                        {{end}}
+                    </div>
+                </div>
+                {{end}}
+                {{end}}
             </div>
-            <p class="text-xs text-gray-400 mt-2">Gözləyən namizədlər</p>
-        </div>
-        
-        <!-- Terminated -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">İşdən Çıxanlar</p>
-                    <p class="text-3xl font-bold text-gray-800">{{.Stats.Terminated}}</p>
-                </div>
-                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user-times text-red-600 text-xl"></i>
-                </div>
-            </div>
-            <p class="text-xs text-gray-400 mt-2">Bu ay: {{.Stats.ThisMonthTerminated}}</p>
-        </div>
-        
-        <!-- Companies -->
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-500">Şirkətlər</p>
-                    <p class="text-3xl font-bold text-gray-800">{{.Stats.TotalCompanies}}</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-building text-blue-600 text-xl"></i>
-                </div>
-            </div>
-            <p class="text-xs text-gray-400 mt-2">Holding struktur</p>
-        </div>
+        </main>
     </div>
-    
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Tez Hərəkətlər</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="/employee/new" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-                <i class="fas fa-user-plus text-blue-600 text-2xl mb-2"></i>
-                <span class="text-sm font-medium text-gray-700">Yeni Namizəd</span>
-            </a>
-            <a href="/employees?status=CANDIDATE" class="flex flex-col items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
-                <i class="fas fa-clipboard-list text-yellow-600 text-2xl mb-2"></i>
-                <span class="text-sm font-medium text-gray-700">Namizədlər</span>
-            </a>
-            <a href="/employees?status=ACTIVE" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
-                <i class="fas fa-users text-green-600 text-2xl mb-2"></i>
-                <span class="text-sm font-medium text-gray-700">İşçilər</span>
-            </a>
-            <a href="/structure" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
-                <i class="fas fa-sitemap text-purple-600 text-2xl mb-2"></i>
-                <span class="text-sm font-medium text-gray-700">Struktur</span>
-            </a>
-        </div>
-    </div>
-    
-    <!-- Company Filter for Holding HR -->
-    {{if or (eq .User.Role "ADMIN") (eq .User.Role "HOLDING_HR")}}
-    <div class="bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Şirkətə görə baxış</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {{range .Companies}}
-            <a href="/employees?status=ACTIVE&company_id={{.ID}}" 
-               class="p-4 border rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-center">
-                <p class="font-medium text-gray-800">{{.Name}}</p>
-                <p class="text-xs text-gray-500">{{if .IsHolding}}Holding{{else}}Alt Şirkət{{end}}</p>
-            </a>
-            {{end}}
-        </div>
-    </div>
-    {{end}}
-</div>
-{{end}}
+</body>
+</html>
