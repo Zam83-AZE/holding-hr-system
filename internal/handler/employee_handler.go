@@ -70,26 +70,45 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
 
         // URL-dən company_id gəlsə, filteri onunla əvəz et (admin və holding HR üçün)
         urlCompanyID := r.URL.Query().Get("company_id")
-        if urlCompanyID != "" && (user.Role == models.RoleAdmin || user.Role == models.RoleHoldingHR) {
+        var selectedCompanyID int
+        var selectedCompanyName string
+        if urlCompanyID != "" {
                 if cid, err := strconv.Atoi(urlCompanyID); err == nil && cid > 0 {
-                        companyFilter = &cid
+                        if user.Role == models.RoleAdmin || user.Role == models.RoleHoldingHR {
+                                companyFilter = &cid
+                                selectedCompanyID = cid
+                        }
                 }
         }
 
         employees, err := h.employeeRepo.GetByStatus(companyFilter, status)
         if err != nil {
-                http.Error(w, "İşçilər yüklənə bilmədi", http.StatusInternalServerError)
+                http.Error(w, "İşçilər yüklənə bilmədi: "+err.Error(), http.StatusInternalServerError)
                 return
+        }
+
+        // Şirkət adını tap
+        if selectedCompanyID > 0 {
+                comp, err := h.companyRepo.GetByID(selectedCompanyID)
+                if err == nil && comp != nil {
+                        selectedCompanyName = comp.Name
+                }
         }
 
         companies, _ := h.companyRepo.GetAll()
 
         data := PageData{
-                Title:     "Kadr Uçotu",
-                User:      user,
-                Employees: employees,
-                Companies: companies,
-                Status:    string(status),
+                Title:              "Kadr Uçotu",
+                User:               user,
+                Employees:          employees,
+                Companies:          companies,
+                Status:             string(status),
+                SelectedCompany:    selectedCompanyID,
+        }
+
+        // Şirkət adını title-a əlavə et
+        if selectedCompanyName != "" {
+                data.Title = selectedCompanyName + " - Kadr Uçotu"
         }
 
         h.templates.ExecuteTemplate(w, "employees.html", data)
