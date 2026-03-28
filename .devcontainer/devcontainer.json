@@ -1,7 +1,11 @@
 {
     "name": "Holding HR System",
-    "build": {
-        "dockerfile": "../Dockerfile"
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/go:1": {
+            "version": "1.21"
+        }
     },
     "forwardPorts": [8080, 3306],
     "portsAttributes": {
@@ -17,11 +21,14 @@
     "customizations": {
         "vscode": {
             "settings": {
-                "remote.autoForwardPorts": true,
-                "remote.autoForwardPortsSource": "process"
-            }
+                "remote.autoForwardPorts": true
+            },
+            "extensions": [
+                "golang.go",
+                "ms-azuretools.vscode-docker"
+            ]
         }
     },
-    "postStartCommand": "docker compose up -d",
+    "postStartCommand": "sudo chown -R $(whoami) /workspaces/holding-hr-system 2>/dev/null || true",
     "remoteUser": "root"
 }
