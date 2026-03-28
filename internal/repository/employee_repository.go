@@ -16,11 +16,20 @@ func NewEmployeeRepository(db *sql.DB) *EmployeeRepository {
 }
 
 // GetByStatus - Statusa görə işçiləri gətir
-func (r *EmployeeRepository) GetByStatus(companyID *int, status models.EmployeeStatus) ([]models.Employee, error) {
+// companyIDs boşdursa bütün şirkətləri, bir və ya bir neçə ID verilibsə IN clause istifadə edir
+func (r *EmployeeRepository) GetByStatus(companyIDs []int, status models.EmployeeStatus) ([]models.Employee, error) {
         var query string
         var args []interface{}
 
-        if companyID != nil {
+        if len(companyIDs) > 0 {
+                // IN clause yarat
+                placeholders := ""
+                for i, id := range companyIDs {
+                        if i > 0 {
+                                placeholders += ","
+                        }
+                        args = append(args, id)
+                }
                 query = `SELECT e.id, e.company_id, e.first_name, e.last_name, e.father_name, e.fin_code,
                                 e.birth_date, e.gender, e.photo_path, e.phone, e.email, e.address, e.status,
                                 e.department_id, e.position_id, e.hire_date, e.termination_date, e.termination_reason,
@@ -30,9 +39,9 @@ func (r *EmployeeRepository) GetByStatus(companyID *int, status models.EmployeeS
                                 LEFT JOIN companies c ON e.company_id = c.id
                                 LEFT JOIN departments d ON e.department_id = d.id
                                 LEFT JOIN positions p ON e.position_id = p.id
-                                WHERE e.company_id = ? AND e.status = ?
+                                WHERE e.company_id IN (` + placeholders + `) AND e.status = ?
                                 ORDER BY e.created_at DESC`
-                args = []interface{}{*companyID, string(status)}
+                args = append(args, string(status))
         } else {
                 query = `SELECT e.id, e.company_id, e.first_name, e.last_name, e.father_name, e.fin_code,
                                 e.birth_date, e.gender, e.photo_path, e.phone, e.email, e.address, e.status,
@@ -211,13 +220,20 @@ func (r *EmployeeRepository) Delete(id int) error {
 }
 
 // Search - Axtarış
-func (r *EmployeeRepository) Search(companyID *int, query string) ([]models.Employee, error) {
+func (r *EmployeeRepository) Search(companyIDs []int, query string) ([]models.Employee, error) {
         var sqlQuery string
         var args []interface{}
 
         searchTerm := "%" + query + "%"
 
-        if companyID != nil {
+        if len(companyIDs) > 0 {
+                placeholders := ""
+                for i, id := range companyIDs {
+                        if i > 0 {
+                                placeholders += ","
+                        }
+                        args = append(args, id)
+                }
                 sqlQuery = `SELECT e.id, e.company_id, e.first_name, e.last_name, e.father_name, e.fin_code,
                                 e.birth_date, e.gender, e.photo_path, e.phone, e.email, e.address, e.status,
                                 e.department_id, e.position_id, e.hire_date, e.termination_date, e.termination_reason,
@@ -227,9 +243,9 @@ func (r *EmployeeRepository) Search(companyID *int, query string) ([]models.Empl
                                 LEFT JOIN companies c ON e.company_id = c.id
                                 LEFT JOIN departments d ON e.department_id = d.id
                                 LEFT JOIN positions p ON e.position_id = p.id
-                                WHERE e.company_id = ? AND (e.first_name LIKE ? OR e.last_name LIKE ? OR e.fin_code LIKE ?)
+                                WHERE e.company_id IN (` + placeholders + `) AND (e.first_name LIKE ? OR e.last_name LIKE ? OR e.fin_code LIKE ?)
                                 ORDER BY e.created_at DESC`
-                args = []interface{}{*companyID, searchTerm, searchTerm, searchTerm}
+                args = append(args, searchTerm, searchTerm, searchTerm)
         } else {
                 sqlQuery = `SELECT e.id, e.company_id, e.first_name, e.last_name, e.father_name, e.fin_code,
                                 e.birth_date, e.gender, e.photo_path, e.phone, e.email, e.address, e.status,
@@ -636,16 +652,22 @@ func (r *EmployeeRepository) AddLifecycleLog(log *models.EmployeeLifecycleLog) e
         return nil
 }
 
-// GetStats - Dashboard statistikası
-func (r *EmployeeRepository) GetStats(companyID *int) (*models.DashboardStats, error) {
+// GetStatsByCompanyIDs - Dashboard statistikası (bir neçə şirkət ID-si üçün)
+func (r *EmployeeRepository) GetStatsByCompanyIDs(companyIDs []int) (*models.DashboardStats, error) {
         stats := &models.DashboardStats{}
 
         var whereClause string
         var args []interface{}
 
-        if companyID != nil {
-                whereClause = "WHERE company_id = ?"
-                args = []interface{}{*companyID}
+        if len(companyIDs) > 0 {
+                placeholders := ""
+                for i, id := range companyIDs {
+                        if i > 0 {
+                                placeholders += ","
+                        }
+                        args = append(args, id)
+                }
+                whereClause = "WHERE company_id IN (" + placeholders + ")"
         }
 
         // Ümumi say
@@ -656,28 +678,28 @@ func (r *EmployeeRepository) GetStats(companyID *int) (*models.DashboardStats, e
 
         // Statuslara görə
         if whereClause != "" {
-                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND company_id = ?", *companyID)
-                if err := r.db.QueryRow(query).Scan(&stats.ActiveEmployees); err != nil {
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND company_id IN (%s)", placeholders)
+                if err := r.db.QueryRow(query, args...).Scan(&stats.ActiveEmployees); err != nil {
                         return nil, fmt.Errorf("active employees query error: %w", err)
                 }
 
-                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'CANDIDATE' AND company_id = ?", *companyID)
-                if err := r.db.QueryRow(query).Scan(&stats.Candidates); err != nil {
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'CANDIDATE' AND company_id IN (%s)", placeholders)
+                if err := r.db.QueryRow(query, args...).Scan(&stats.Candidates); err != nil {
                         return nil, fmt.Errorf("candidates query error: %w", err)
                 }
 
-                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND company_id = ?", *companyID)
-                if err := r.db.QueryRow(query).Scan(&stats.Terminated); err != nil {
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND company_id IN (%s)", placeholders)
+                if err := r.db.QueryRow(query, args...).Scan(&stats.Terminated); err != nil {
                         return nil, fmt.Errorf("terminated query error: %w", err)
                 }
 
                 // Bu ay işə qəbul
-                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND MONTH(hire_date) = MONTH(CURRENT_DATE()) AND YEAR(hire_date) = YEAR(CURRENT_DATE()) AND company_id = ?", *companyID)
-                r.db.QueryRow(query).Scan(&stats.ThisMonthHired)
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE' AND MONTH(hire_date) = MONTH(CURRENT_DATE()) AND YEAR(hire_date) = YEAR(CURRENT_DATE()) AND company_id IN (%s)", placeholders)
+                r.db.QueryRow(query, args...).Scan(&stats.ThisMonthHired)
 
                 // Bu ay işdən çıxan
-                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND MONTH(termination_date) = MONTH(CURRENT_DATE()) AND YEAR(termination_date) = YEAR(CURRENT_DATE()) AND company_id = ?", *companyID)
-                r.db.QueryRow(query).Scan(&stats.ThisMonthTerminated)
+                query = fmt.Sprintf("SELECT COUNT(*) FROM employees WHERE status = 'TERMINATED' AND MONTH(termination_date) = MONTH(CURRENT_DATE()) AND YEAR(termination_date) = YEAR(CURRENT_DATE()) AND company_id IN (%s)", placeholders)
+                r.db.QueryRow(query, args...).Scan(&stats.ThisMonthTerminated)
         } else {
                 query = "SELECT COUNT(*) FROM employees WHERE status = 'ACTIVE'"
                 if err := r.db.QueryRow(query).Scan(&stats.ActiveEmployees); err != nil {

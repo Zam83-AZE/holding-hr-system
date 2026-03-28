@@ -119,27 +119,38 @@ func RequireRole(roles ...models.Role) func(http.HandlerFunc) http.HandlerFunc {
         }
 }
 
-// CanAccessCompany - şirkətə çıxış icazəsi
-func CanAccessCompany(user *models.Claims, companyID int) bool {
+// CanAccessCompany - şirkətə çıxış icazəsi (hiyerarşiki nəzərə alır)
+// userAncestorIDs: istifadəçinin şirkəti + bütün atalarının ID-ləri
+func CanAccessCompany(user *models.Claims, companyID int, userAncestorIDs ...int) bool {
         // Admin və Holding HR bütün şirkətləri görə bilər
         if user.Role == models.RoleAdmin || user.Role == models.RoleHoldingHR {
                 return true
         }
 
-        // Alt şirkət HR yalnız öz şirkətini görə bilər
+        // Alt şirkət HR yalnız öz şirkətini və alt-şirkətlərini görə bilər
         if user.CompanyID != nil && *user.CompanyID == companyID {
                 return true
+        }
+
+        // Əgər ancestor ID-ləri verilibsə (parent + grandparents), onları yoxla
+        for _, ancestorID := range userAncestorIDs {
+                if ancestorID == companyID {
+                        return true
+                }
         }
 
         return false
 }
 
-// GetCompanyFilter - user-in görə biləcəyi şirkət filteri
-func GetCompanyFilter(user *models.Claims) *int {
+// GetCompanyFilterIDs - user-in görə biləcəyi şirkət ID-ləri
+func GetCompanyFilterIDs(user *models.Claims) []int {
         if user.Role == models.RoleAdmin || user.Role == models.RoleHoldingHR {
-                return nil // Bütün şirkətlər
+                return nil // Bütün şirkətlər (boş slice)
         }
-        return user.CompanyID // Yalnız öz şirkəti
+        if user.CompanyID != nil {
+                return []int{*user.CompanyID}
+        }
+        return nil
 }
 
 // IsHTMX - HTMX request-i yoxla

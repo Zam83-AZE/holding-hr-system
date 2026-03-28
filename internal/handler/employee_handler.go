@@ -38,9 +38,13 @@ func NewEmployeeHandler(
 // ShowDashboard - Ana səhifə
 func (h *EmployeeHandler) ShowDashboard(w http.ResponseWriter, r *http.Request) {
         user := middleware.GetCurrentUser(r)
-        companyFilter := middleware.GetCompanyFilter(user)
 
-        stats, err := h.employeeRepo.GetStats(companyFilter)
+        var companyIDs []int
+        if user.CompanyID != nil {
+                companyIDs = []int{*user.CompanyID}
+        }
+
+        stats, err := h.employeeRepo.GetStatsByCompanyIDs(companyIDs)
         if err != nil {
                 http.Error(w, "Statistika yüklənə bilmədi", http.StatusInternalServerError)
                 return
@@ -62,7 +66,10 @@ func (h *EmployeeHandler) ShowDashboard(w http.ResponseWriter, r *http.Request) 
 // ShowEmployees - İşçilər siyahısı
 func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) {
         user := middleware.GetCurrentUser(r)
-        companyFilter := middleware.GetCompanyFilter(user)
+        var companyIDs []int
+        if user.CompanyID != nil {
+                companyIDs = []int{*user.CompanyID}
+        }
 
         status := models.EmployeeStatus(r.URL.Query().Get("status"))
         if status == "" {
@@ -81,15 +88,16 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
                         if user.Role == models.RoleAdmin || user.Role == models.RoleHoldingHR {
                                 selectedCompanyID = cid
 
-                                // Alt-şirkətləri yoxla
+                                // Alt-şirkətləri yoxla və bütün ID-ləri topla
                                 subs, err := h.companyRepo.GetSubCompanies(cid)
                                 if err == nil && len(subs) > 0 {
                                         subCompanies = subs
-                                        // Alt-şirkətlər varsa, filteri bu şirkət + alt-şirkətlərə genişləndir
-                                        // (birbaşa bu şirkətin işçilərini də göstər)
-                                        companyFilter = &cid
+                                        companyIDs = []int{cid}
+                                        for _, sub := range subs {
+                                                companyIDs = append(companyIDs, sub.ID)
+                                        }
                                 } else {
-                                        companyFilter = &cid
+                                        companyIDs = []int{cid}
                                 }
 
                                 // Ana şirkəti tap (alt-şirkətdənmisiniz?)
@@ -104,7 +112,7 @@ func (h *EmployeeHandler) ShowEmployees(w http.ResponseWriter, r *http.Request) 
                 }
         }
 
-        employees, err := h.employeeRepo.GetByStatus(companyFilter, status)
+        employees, err := h.employeeRepo.GetByStatus(companyIDs, status)
         if err != nil {
                 http.Error(w, "İşçilər yüklənə bilmədi: "+err.Error(), http.StatusInternalServerError)
                 return
@@ -495,7 +503,7 @@ func (h *EmployeeHandler) ReactivateEmployee(w http.ResponseWriter, r *http.Requ
 // SearchEmployees - Axtarış
 func (h *EmployeeHandler) SearchEmployees(w http.ResponseWriter, r *http.Request) {
         user := middleware.GetCurrentUser(r)
-        companyFilter := middleware.GetCompanyFilter(user)
+        companyIDs := middleware.GetCompanyFilterIDs(user)
 
         query := r.URL.Query().Get("q")
         if query == "" {
@@ -503,7 +511,7 @@ func (h *EmployeeHandler) SearchEmployees(w http.ResponseWriter, r *http.Request
                 return
         }
 
-        employees, err := h.employeeRepo.Search(companyFilter, query)
+        employees, err := h.employeeRepo.Search(companyIDs, query)
         if err != nil {
                 http.Error(w, "Axtarış xətası", http.StatusInternalServerError)
                 return
