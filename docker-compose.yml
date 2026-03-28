@@ -73,9 +73,8 @@ services:
         git config --global --add safe.directory /app &&
         git config --global user.email 'test@holding-hr.local' &&
         git config --global user.name 'Test Runner' &&
-        chmod +x /app/scripts/git_push.sh &&
         git add test-results/ &&
-        git diff --staged --quiet || (git commit -m 'Test results' && /app/scripts/git_push.sh) &&
+        git diff --staged --quiet || (git commit -m 'Test results' && git push origin main) &&
         echo 'Done!'
       "
     networks:
