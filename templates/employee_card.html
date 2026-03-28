@@ -6,6 +6,16 @@
     <title>İşçi Kartoçkası | Holding HR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .tab-btn.active {
+            border-bottom: 2px solid #3b82f6;
+            color: #2563eb;
+            font-weight: 500;
+        }
+        .tab-btn:not(.active) {
+            color: #6b7280;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
@@ -47,12 +57,12 @@
                     
                     <div class="flex space-x-2">
                         {{if eq .Employee.Status "CANDIDATE"}}
-                        <button onclick="document.getElementById('hireModal').classList.remove('hidden')" class="bg-green-500 px-4 py-2 rounded-lg">
+                        <button onclick="openModal('hireModal')" class="bg-green-500 px-4 py-2 rounded-lg">
                             <i class="fas fa-check mr-2"></i>İşə Qəbul
                         </button>
                         {{end}}
                         {{if eq .Employee.Status "ACTIVE"}}
-                        <button onclick="document.getElementById('terminateModal').classList.remove('hidden')" class="bg-red-500 px-4 py-2 rounded-lg">
+                        <button onclick="openModal('terminateModal')" class="bg-red-500 px-4 py-2 rounded-lg">
                             <i class="fas fa-times mr-2"></i>Hitam
                         </button>
                         {{end}}
@@ -68,12 +78,12 @@
             
             <!-- Tabs -->
             <div class="bg-white rounded-lg shadow">
-                <div class="border-b flex">
-                    <button onclick="showTab('personal', event)" class="px-6 py-3 border-b-2 border-blue-500 text-blue-600 font-medium tab-btn" data-tab="personal">Şəxsi</button>
-                    <button onclick="showTab('education', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="education">Təhsil</button>
-                    <button onclick="showTab('experience', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="experience">Təcrübə</button>
-                    <button onclick="showTab('family', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="family">Ailə</button>
-                    <button onclick="showTab('history', event)" class="px-6 py-3 text-gray-500 tab-btn" data-tab="history">Tarixçə</button>
+                <div class="border-b flex" id="tab-buttons">
+                    <button class="tab-btn active px-6 py-3" data-tab="personal">Şəxsi</button>
+                    <button class="tab-btn px-6 py-3" data-tab="education">Təhsil</button>
+                    <button class="tab-btn px-6 py-3" data-tab="experience">Təcrübə</button>
+                    <button class="tab-btn px-6 py-3" data-tab="family">Ailə</button>
+                    <button class="tab-btn px-6 py-3" data-tab="history">Tarixçə</button>
                 </div>
                 
                 <!-- Personal Tab -->
@@ -134,7 +144,7 @@
                 <div id="education-tab" class="p-6 tab-content hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold">Təhsil</h3>
-                        <button onclick="document.getElementById('eduModal').classList.remove('hidden')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
+                        <button onclick="openModal('eduModal')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
                     </div>
                     <div class="space-y-3">
                         {{range .Education}}
@@ -153,7 +163,7 @@
                 <div id="experience-tab" class="p-6 tab-content hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold">İş Təcrübəsi</h3>
-                        <button onclick="document.getElementById('expModal').classList.remove('hidden')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
+                        <button onclick="openModal('expModal')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
                     </div>
                     <div class="space-y-3">
                         {{range .Experience}}
@@ -172,7 +182,7 @@
                 <div id="family-tab" class="p-6 tab-content hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold">Ailə Məlumatları</h3>
-                        <button onclick="document.getElementById('famModal').classList.remove('hidden')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
+                        <button onclick="openModal('famModal')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         {{range .Family}}
@@ -235,7 +245,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('hireModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="button" onclick="closeModal('hireModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
                     <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg">Qəbul Et</button>
                 </div>
             </form>
@@ -259,7 +269,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('terminateModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="button" onclick="closeModal('terminateModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
                     <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg">Təsdiqlə</button>
                 </div>
             </form>
@@ -293,7 +303,75 @@
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('eduModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="button" onclick="closeModal('eduModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Experience Modal -->
+    <div id="expModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">İş Təcrübəsi Əlavə Et</h3>
+            <form action="/employee/experience/add" method="POST">
+                <input type="hidden" name="employee_id" value="{{.Employee.ID}}">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Şirkət</label>
+                        <input type="text" name="company_name" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Vəzifə</label>
+                        <input type="text" name="position" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Başlama</label>
+                            <input type="date" name="start_date" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Bitmə</label>
+                            <input type="date" name="end_date" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('expModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Family Modal -->
+    <div id="famModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-semibold mb-4">Ailə Üzvü Əlavə Et</h3>
+            <form action="/employee/family/add" method="POST">
+                <input type="hidden" name="employee_id" value="{{.Employee.ID}}">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Ad Soyad</label>
+                        <input type="text" name="full_name" class="w-full px-3 py-2 border rounded-lg" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Əlaqə</label>
+                        <select name="relation_type" class="w-full px-3 py-2 border rounded-lg" required>
+                            <option value="">Seçin</option>
+                            <option value="FATHER">Ata</option>
+                            <option value="MOTHER">Ana</option>
+                            <option value="SPOUSE">Həyat yoldaşı</option>
+                            <option value="CHILD">Övlad</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Telefon</label>
+                        <input type="text" name="contact_number" class="w-full px-3 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeModal('famModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
                 </div>
             </form>
@@ -301,24 +379,55 @@
     </div>
     
     <script>
-    function showTab(tab, evt) {
-        // Bütün tab content-ləri gizlət
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        // Seçilən tab-ı göstər
-        document.getElementById(tab + '-tab').classList.remove('hidden');
-        
-        // Bütün button-lardan aktiv stilini sil
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
-            btn.classList.add('text-gray-500');
+    // Tab funksiyaları
+    function showTab(tabName) {
+        // Bütün content-ləri gizlət
+        document.querySelectorAll('.tab-content').forEach(function(el) {
+            el.classList.add('hidden');
         });
         
-        // Kliklənən button-a aktiv stili əlavə et
-        if (evt && evt.target) {
-            evt.target.classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
-            evt.target.classList.remove('text-gray-500');
+        // Seçilən tab-ı göstər
+        var selectedTab = document.getElementById(tabName + '-tab');
+        if (selectedTab) {
+            selectedTab.classList.remove('hidden');
+        }
+        
+        // Bütün button-lardan active class-ını sil
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        
+        // Kliklənən button-a active class əlavə et
+        var clickedBtn = document.querySelector('.tab-btn[data-tab="' + tabName + '"]');
+        if (clickedBtn) {
+            clickedBtn.classList.add('active');
         }
     }
+    
+    // Modal funksiyaları
+    function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+    
+    function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+    
+    // Səhifə yüklənəndə tab-lara click event əlavə et
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var tabName = this.getAttribute('data-tab');
+                showTab(tabName);
+            });
+        });
+    });
     </script>
 </body>
 </html>
