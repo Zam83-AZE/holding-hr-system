@@ -29,10 +29,6 @@ CREATE TABLE IF NOT EXISTS employee_certificates (
     INDEX idx_expiry (expiry_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Add work_location_id and uniform_size columns to employees table (idempotent)
-ALTER TABLE employees ADD COLUMN IF NOT EXISTS work_location_id INT NULL AFTER position_id;
-ALTER TABLE employees ADD COLUMN IF NOT EXISTS uniform_size VARCHAR(20) NULL AFTER work_location_id;
-
 -- Seed Work Locations
 INSERT IGNORE INTO work_locations (company_id, name, address, type) VALUES
 -- City Service Company restaurants (5)

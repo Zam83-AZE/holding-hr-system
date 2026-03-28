@@ -342,6 +342,10 @@ func runMigrations(db *sql.DB) error {
                 return fmt.Errorf("schema_migrations cədvəli yaradıla bilmədi: %w", err)
         }
 
+        // employees cədvəlinə yeni column-lar əlavə et (MariaDB uyğun)
+        safeAddColumn(db, "employees", "work_location_id", "INT NULL AFTER position_id")
+        safeAddColumn(db, "employees", "uniform_size", "VARCHAR(20) NULL AFTER work_location_id")
+
         // Migrasiya fayllarını oxu
         migrationsDir := "migrations"
         if _, err := os.Stat(migrationsDir); os.IsNotExist(err) {
@@ -379,45 +383,72 @@ func runMigrations(db *sql.DB) error {
                         continue
                 }
 
-                // Tətbiq et
+                // Statement-ləri bölərək icra et
                 log.Printf("Migrasiya tətbiq olunur: %s", file)
-                _, err = db.Exec(string(content))
-                if err != nil {
-                        log.Printf("Migrasiya xətası (%s): %v", file, err)
-                        // Cəhd edək: statement-ləri bölərək icra et
-                        if execStatementsSeparately(db, string(content)) {
-                                log.Printf("Migrasiya statement bölməsi ilə uğurla tamamlandı: %s", file)
-                                db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", file)
-                        } else {
-                                log.Printf("Migrasiya tamamilə uğursuz oldu: %s", file)
+                statements := splitStatements(string(content))
+                allOk := true
+                for _, stmt := range statements {
+                        stmt = strings.TrimSpace(stmt)
+                        if stmt == "" || strings.HasPrefix(stmt, "--") {
+                                continue
                         }
-                        continue
+                        if _, err := db.Exec(stmt); err != nil {
+                                // Safe error-ları ignor et
+                                errStr := err.Error()
+                                if isSafeError(errStr) {
+                                        log.Printf("Migrasiya: safe error ignor edildi: %.80s", errStr)
+                                        continue
+                                }
+                                log.Printf("Migrasiya statement xətası (%s): %v\nStatement: %.100s", file, err, stmt)
+                                allOk = false
+                        }
                 }
 
-                // Qeyd et
-                db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", file)
-                log.Printf("Migrasiya uğurla tətbiq edildi: %s", file)
+                if allOk {
+                        db.Exec("INSERT INTO schema_migrations (version) VALUES (?)", file)
+                        log.Printf("Migrasiya uğurla tətbiq edildi: %s", file)
+                } else {
+                        log.Printf("Migrasiyada bəzi xətalar oldu: %s (davam edilir)", file)
+                }
         }
 
         return nil
 }
 
-// execStatementsSeparately - SQL-i fərdi statement-lərə bölərək icra edir
-func execStatementsSeparately(db *sql.DB, sqlContent string) bool {
-        // Şərhləri və boş sətirləri təmizlə
-        statements := splitStatements(sqlContent)
-        success := true
-        for _, stmt := range statements {
-                stmt = strings.TrimSpace(stmt)
-                if stmt == "" || strings.HasPrefix(stmt, "--") {
-                        continue
-                }
-                if _, err := db.Exec(stmt); err != nil {
-                        log.Printf("Statement xətası: %v\nStatement: %.100s", err, stmt)
-                        success = false
+// safeAddColumn - MariaDB uyğun column əlavə etmə (dublicat varsa ignor)
+func safeAddColumn(db *sql.DB, table, column, definition string) {
+        var count int
+        query := fmt.Sprintf(
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '%s' AND COLUMN_NAME = '%s'",
+                table, column,
+        )
+        db.QueryRow(query).Scan(&count)
+        if count > 0 {
+                return // Column artıq mövcuddur
+        }
+        alterSQL := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", table, column, definition)
+        if _, err := db.Exec(alterSQL); err != nil {
+                log.Printf("Column əlavə xətası (%s.%s): %v", table, column, err)
+        } else {
+                log.Printf("Column əlavə edildi: %s.%s", table, column)
+        }
+}
+
+// isSafeError - təhlükəsiz error-ları yoxla
+func isSafeError(errStr string) bool {
+        safePatterns := []string{
+                "Duplicate column name",
+                "Duplicate key name",
+                "already exists",
+                "Unknown column",
+        }
+        lower := strings.ToLower(errStr)
+        for _, p := range safePatterns {
+                if strings.Contains(lower, strings.ToLower(p)) {
+                        return true
                 }
         }
-        return success
+        return false
 }
 
 // splitStatements - SQL-i nöqtəli vergülə görə bölür (daxili string-ləri nəzərə alaraq)
