@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         .tab-btn.active {
-            border-bottom: 2px solid #C9A227;
-            color: #C9A227;
+            border-bottom: 2px solid #3B82F6;
+            color: #3B82F6;
             font-weight: 600;
         }
         .tab-btn:not(.active) { color: #6b7280; }
@@ -28,14 +28,14 @@
         .modal-overlay.open { display: flex; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-slate-50">
     <div class="flex min-h-screen">
-        <div class="w-64 bg-gray-900 text-white p-4 flex-shrink-0">
-            <h1 class="text-xl font-bold mb-6"><i class="fas fa-crown mr-2 text-yellow-500"></i>Azman Holding</h1>
+        <div class="w-64 bg-slate-800 text-white p-4 flex-shrink-0">
+            <h1 class="text-xl font-bold mb-6"><i class="fas fa-building mr-2 text-slate-400"></i>Azman HR</h1>
             <nav class="space-y-2">
-                <a href="/" class="block px-4 py-2 rounded hover:bg-gray-800"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
-                <a href="/employees" class="block px-4 py-2 rounded hover:bg-gray-800"><i class="fas fa-users mr-2"></i>Kadr Uçotu</a>
-                <a href="/structure" class="block px-4 py-2 rounded hover:bg-gray-800"><i class="fas fa-sitemap mr-2"></i>Struktur</a>
+                <a href="/" class="block px-4 py-2 rounded hover:bg-slate-700"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+                <a href="/employees" class="block px-4 py-2 rounded hover:bg-slate-700"><i class="fas fa-users mr-2"></i>Kadr Uçotu</a>
+                <a href="/structure" class="block px-4 py-2 rounded hover:bg-slate-700"><i class="fas fa-sitemap mr-2"></i>Struktur</a>
             </nav>
         </div>
 
@@ -45,7 +45,7 @@
             </a>
 
             <!-- Employee Header -->
-            <div class="bg-gradient-to-r from-gray-900 to-black rounded-lg p-6 text-white mb-6">
+            <div class="bg-gradient-to-r from-slate-700 to-slate-900 rounded-lg p-6 text-white mb-6">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
                         <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mr-4">
@@ -53,8 +53,8 @@
                         </div>
                         <div>
                             <h1 class="text-2xl font-bold">{{.Employee.FirstName}} {{.Employee.LastName}}</h1>
-                            <p class="text-yellow-200">{{.Employee.FatherName}}</p>
-                            <p class="text-yellow-200 text-sm">{{.Employee.PositionName}} | {{.Employee.DepartmentName}}</p>
+                            <p class="text-slate-300">{{.Employee.FatherName}}</p>
+                            <p class="text-slate-300 text-sm">{{.Employee.PositionName}} | {{.Employee.DepartmentName}}</p>
                             <span class="inline-block mt-2 px-3 py-1 text-xs rounded-full
                                 {{if eq .Employee.Status "ACTIVE"}}bg-green-500
                                 {{else if eq .Employee.Status "CANDIDATE"}}bg-yellow-500
@@ -79,7 +79,7 @@
                         {{if eq .Employee.Status "TERMINATED"}}
                         <form action="/employee/reactivate" method="POST">
                             <input type="hidden" name="id" value="{{.Employee.ID}}">
-                            <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg transition">
                                 <i class="fas fa-redo mr-2"></i>Bərpa
                             </button>
                         </form>
@@ -119,27 +119,27 @@
                         <div class="grid grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Ad</label>
-                                <input type="text" name="first_name" value="{{.Employee.FirstName}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" name="first_name" value="{{.Employee.FirstName}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Soyad</label>
-                                <input type="text" name="last_name" value="{{.Employee.LastName}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" name="last_name" value="{{.Employee.LastName}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Ata adı</label>
-                                <input type="text" name="father_name" value="{{.Employee.FatherName}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" name="father_name" value="{{.Employee.FatherName}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">FİN</label>
-                                <input type="text" name="fin_code" value="{{.Employee.FINCode}}" class="w-full px-3 py-2 border rounded-lg uppercase focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" name="fin_code" value="{{.Employee.FINCode}}" class="w-full px-3 py-2 border rounded-lg uppercase focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Doğum tarixi</label>
-                                <input type="date" name="birth_date" value="{{.Employee.BirthDate | formatDateInput}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="date" name="birth_date" value="{{.Employee.BirthDate | formatDateInput}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Cins</label>
-                                <select name="gender" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <select name="gender" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                     <option value="">Seçin</option>
                                     <option value="MALE" {{if eq (print .Employee.Gender) "MALE"}}selected{{end}}>Kişi</option>
                                     <option value="FEMALE" {{if eq (print .Employee.Gender) "FEMALE"}}selected{{end}}>Qadın</option>
@@ -147,19 +147,19 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Telefon</label>
-                                <input type="text" name="phone" value="{{.Employee.Phone}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" name="phone" value="{{.Employee.Phone}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Email</label>
-                                <input type="email" name="email" value="{{.Employee.Email}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="email" name="email" value="{{.Employee.Email}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Ünvan</label>
-                                <input type="text" name="address" value="{{.Employee.Address}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600">
+                                <input type="text" name="address" value="{{.Employee.Address}}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
                         <div class="mt-6 flex justify-end">
-                            <button type="submit" class="px-5 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition">
+                            <button type="submit" class="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
                                 <i class="fas fa-save mr-2"></i>Yadda Saxla
                             </button>
                         </div>
@@ -169,30 +169,30 @@
                 <!-- Education Tab -->
                 <div id="tab-education" class="tab-panel p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-graduation-cap mr-2 text-yellow-500"></i>Təhsil</h3>
-                        <button onclick="openModal('eduModal')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition">
+                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Təhsil</h3>
+                        <button onclick="openModal('eduModal')" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition">
                             <i class="fas fa-plus mr-2"></i>Əlavə Et
                         </button>
                     </div>
                     <div class="space-y-3">
                         {{range .Education}}
-                        <div class="border border-gray-200 rounded-lg p-4 hover:border-yellow-300 transition">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
                             <div class="flex justify-between items-start">
                                 <div class="flex-1">
                                     <p class="font-semibold text-gray-800">{{.Institution}}</p>
                                     <p class="text-sm text-gray-600 mt-1">{{.Specialty}}</p>
                                     <div class="flex items-center gap-4 mt-2">
-                                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded">{{.Degree}}</span>
+                                        <span class="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">{{.Degree}}</span>
                                         <span class="text-xs text-gray-400">{{.StartYear}} – {{.EndYear}}</span>
                                         {{if .DiplomaNumber}}<span class="text-xs text-gray-400">Diplom: {{.DiplomaNumber}}</span>{{end}}
                                     </div>
                                 </div>
                                 <div class="flex gap-2 ml-4">
-                                    <button onclick="editEducation({{.ID}}, '{{.Institution}}', '{{.Specialty}}', '{{.Degree}}', {{.StartYear}}, {{.EndYear}}, '{{.DiplomaNumber}}')" 
-                                            class="text-yellow-600 hover:text-yellow-800 p-1" title="Redaktə et">
+                                    <button onclick="editEducation({{.ID}}, '{{.Institution}}', '{{.Specialty}}', '{{.Degree}}', {{.StartYear}}, {{.EndYear}}, '{{.DiplomaNumber}}')"
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button onclick="deleteEducation({{.ID}})" 
+                                    <button onclick="deleteEducation({{.ID}})"
                                             class="text-red-600 hover:text-red-800 p-1" title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -211,18 +211,18 @@
                 <!-- Experience Tab -->
                 <div id="tab-experience" class="tab-panel p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-briefcase mr-2 text-yellow-500"></i>İş Təcrübəsi</h3>
-                        <button onclick="openModal('expModal')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition">
+                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-briefcase mr-2 text-blue-500"></i>İş Təcrübəsi</h3>
+                        <button onclick="openModal('expModal')" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition">
                             <i class="fas fa-plus mr-2"></i>Əlavə Et
                         </button>
                     </div>
                     <div class="space-y-3">
                         {{range .Experience}}
-                        <div class="border border-gray-200 rounded-lg p-4 hover:border-yellow-300 transition">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
                             <div class="flex justify-between items-start">
                                 <div class="flex-1">
                                     <p class="font-semibold text-gray-800">{{.CompanyName}}</p>
-                                    <p class="text-sm text-yellow-600 mt-1">{{.Position}}</p>
+                                    <p class="text-sm text-blue-600 mt-1">{{.Position}}</p>
                                     <p class="text-xs text-gray-400 mt-2">
                                         <i class="fas fa-calendar mr-1"></i>
                                         {{.StartDate | formatDate}} – {{.EndDate | formatDate}}
@@ -232,11 +232,11 @@
                                     {{end}}
                                 </div>
                                 <div class="flex gap-2 ml-4">
-                                    <button onclick="editExperience({{.ID}}, '{{.CompanyName}}', '{{.Position}}', '{{.StartDate | formatDateInput}}', '{{.EndDate | formatDateInput}}', '{{.LeavingReason}}')" 
-                                            class="text-yellow-600 hover:text-yellow-800 p-1" title="Redaktə et">
+                                    <button onclick="editExperience({{.ID}}, '{{.CompanyName}}', '{{.Position}}', '{{.StartDate | formatDateInput}}', '{{.EndDate | formatDateInput}}', '{{.LeavingReason}}')"
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button onclick="deleteExperience({{.ID}})" 
+                                    <button onclick="deleteExperience({{.ID}})"
                                             class="text-red-600 hover:text-red-800 p-1" title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -255,18 +255,18 @@
                 <!-- Family Tab -->
                 <div id="tab-family" class="tab-panel p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-heart mr-2 text-yellow-500"></i>Ailə Məlumatları</h3>
-                        <button onclick="openModal('famModal')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition">
+                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-heart mr-2 text-blue-500"></i>Ailə Məlumatları</h3>
+                        <button onclick="openModal('famModal')" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition">
                             <i class="fas fa-plus mr-2"></i>Əlavə Et
                         </button>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         {{range .Family}}
-                        <div class="border border-gray-200 rounded-lg p-4 hover:border-yellow-300 transition">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition">
                             <div class="flex justify-between items-start">
                                 <div class="flex-1">
                                     <p class="font-semibold text-gray-800">{{.FullName}}</p>
-                                    <p class="text-sm text-yellow-600 mt-1">
+                                    <p class="text-sm text-blue-600 mt-1">
                                         {{if eq .RelationType "FATHER"}}Ata
                                         {{else if eq .RelationType "MOTHER"}}Ana
                                         {{else if eq .RelationType "SPOUSE"}}Həyat yoldaşı
@@ -277,11 +277,11 @@
                                     {{if .ContactNumber}}<p class="text-xs text-gray-400 mt-1"><i class="fas fa-phone mr-1"></i>{{.ContactNumber}}</p>{{end}}
                                 </div>
                                 <div class="flex gap-2 ml-2">
-                                    <button onclick="editFamily({{.ID}}, '{{.RelationType}}', '{{.FullName}}', '{{.BirthDate | formatDateInput}}', '{{.ContactNumber}}')" 
-                                            class="text-yellow-600 hover:text-yellow-800 p-1" title="Redaktə et">
+                                    <button onclick="editFamily({{.ID}}, '{{.RelationType}}', '{{.FullName}}', '{{.BirthDate | formatDateInput}}', '{{.ContactNumber}}')"
+                                            class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button onclick="deleteFamily({{.ID}})" 
+                                    <button onclick="deleteFamily({{.ID}})"
                                             class="text-red-600 hover:text-red-800 p-1" title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -300,8 +300,8 @@
                 <!-- Certificates Tab -->
                 <div id="tab-certificates" class="tab-panel p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-certificate mr-2 text-yellow-500"></i>Sertifikatlar</h3>
-                        <button onclick="openModal('certModal')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition">
+                        <h3 class="text-lg font-semibold text-gray-700"><i class="fas fa-certificate mr-2 text-blue-500"></i>Sertifikatlar</h3>
+                        <button onclick="openModal('certModal')" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition">
                             <i class="fas fa-plus mr-2"></i>Əlavə Et
                         </button>
                     </div>
@@ -338,11 +338,11 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="flex gap-2">
-                                            <button onclick="editCertificate({{.ID}}, '{{.CertificateType}}', '{{.CertificateNumber}}', '{{.IssuedBy}}', '{{if .IssueDate}}{{.IssueDate.Format "2006-01-02"}}{{end}}', '{{if .ExpiryDate}}{{.ExpiryDate.Format "2006-01-02"}}{{end}}', '{{.Notes}}')" 
-                                                    class="text-yellow-600 hover:text-yellow-800 p-1" title="Redaktə et">
+                                            <button onclick="editCertificate({{.ID}}, '{{.CertificateType}}', '{{.CertificateNumber}}', '{{.IssuedBy}}', '{{if .IssueDate}}{{.IssueDate.Format "2006-01-02"}}{{end}}', '{{if .ExpiryDate}}{{.ExpiryDate.Format "2006-01-02"}}{{end}}', '{{.Notes}}')"
+                                                    class="text-blue-600 hover:text-blue-800 p-1" title="Redaktə et">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button onclick="deleteCertificate({{.ID}})" 
+                                            <button onclick="deleteCertificate({{.ID}})"
                                                     class="text-red-600 hover:text-red-800 p-1" title="Sil">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -364,11 +364,11 @@
 
                 <!-- History Tab -->
                 <div id="tab-history" class="tab-panel p-6">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-4"><i class="fas fa-history mr-2 text-yellow-500"></i>Tarixçə</h3>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4"><i class="fas fa-history mr-2 text-blue-500"></i>Tarixçə</h3>
                     <div class="space-y-4">
                         {{range .Lifecycle}}
                         <div class="flex items-start">
-                            <div class="w-3 h-3 bg-yellow-500 rounded-full mt-1 mr-4 flex-shrink-0"></div>
+                            <div class="w-3 h-3 bg-blue-500 rounded-full mt-1 mr-4 flex-shrink-0"></div>
                             <div class="border-l-2 border-gray-200 pl-4 pb-4">
                                 <p class="text-gray-800">{{.EventDescription}}</p>
                                 <p class="text-xs text-gray-400 mt-1">{{.CreatedAt.Format "02.01.2006 15:04"}}</p>
@@ -456,7 +456,7 @@
     <div id="eduModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-graduation-cap mr-2 text-yellow-500"></i>Təhsil Əlavə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Təhsil Əlavə Et</h3>
                 <button onclick="closeModal('eduModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/education/add" method="POST">
@@ -497,7 +497,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('eduModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Əlavə Et</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Əlavə Et</button>
                 </div>
             </form>
         </div>
@@ -507,7 +507,7 @@
     <div id="expModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-briefcase mr-2 text-yellow-500"></i>İş Təcrübəsi Əlavə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-briefcase mr-2 text-blue-500"></i>İş Təcrübəsi Əlavə Et</h3>
                 <button onclick="closeModal('expModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/experience/add" method="POST">
@@ -538,7 +538,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('expModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Əlavə Et</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Əlavə Et</button>
                 </div>
             </form>
         </div>
@@ -548,7 +548,7 @@
     <div id="famModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-heart mr-2 text-yellow-500"></i>Ailə Üzvü Əlavə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-heart mr-2 text-blue-500"></i>Ailə Üzvü Əlavə Et</h3>
                 <button onclick="closeModal('famModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/family/add" method="POST">
@@ -580,7 +580,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('famModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Əlavə Et</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Əlavə Et</button>
                 </div>
             </form>
         </div>
@@ -590,7 +590,7 @@
     <div id="certModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-certificate mr-2 text-yellow-500"></i>Sertifikat Əlavə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-certificate mr-2 text-blue-500"></i>Sertifikat Əlavə Et</h3>
                 <button onclick="closeModal('certModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/certificate/add" method="POST">
@@ -635,7 +635,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('certModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Əlavə Et</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Əlavə Et</button>
                 </div>
             </form>
         </div>
@@ -645,7 +645,7 @@
     <div id="editCertModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-certificate mr-2 text-yellow-500"></i>Sertifikatı Redaktə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-certificate mr-2 text-blue-500"></i>Sertifikatı Redaktə Et</h3>
                 <button onclick="closeModal('editCertModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/certificate/update" method="POST">
@@ -691,7 +691,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('editCertModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Yadda Saxla</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Yadda Saxla</button>
                 </div>
             </form>
         </div>
@@ -816,7 +816,7 @@
     <div id="editEduModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-graduation-cap mr-2 text-yellow-500"></i>Təhsili Redaktə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Təhsili Redaktə Et</h3>
                 <button onclick="closeModal('editEduModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/education/update" method="POST">
@@ -857,7 +857,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('editEduModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Yadda Saxla</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Yadda Saxla</button>
                 </div>
             </form>
         </div>
@@ -867,7 +867,7 @@
     <div id="editExpModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-briefcase mr-2 text-yellow-500"></i>Təcrübəni Redaktə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-briefcase mr-2 text-blue-500"></i>Təcrübəni Redaktə Et</h3>
                 <button onclick="closeModal('editExpModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/experience/update" method="POST">
@@ -898,7 +898,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('editExpModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Yadda Saxla</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Yadda Saxla</button>
                 </div>
             </form>
         </div>
@@ -908,7 +908,7 @@
     <div id="editFamModal" class="modal-overlay">
         <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold"><i class="fas fa-heart mr-2 text-yellow-500"></i>Ailə Üzvünü Redaktə Et</h3>
+                <h3 class="text-lg font-semibold"><i class="fas fa-heart mr-2 text-blue-500"></i>Ailə Üzvünü Redaktə Et</h3>
                 <button onclick="closeModal('editFamModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
             </div>
             <form action="/employee/family/update" method="POST">
@@ -939,7 +939,7 @@
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeModal('editFamModal')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg">Yadda Saxla</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg">Yadda Saxla</button>
                 </div>
             </form>
         </div>

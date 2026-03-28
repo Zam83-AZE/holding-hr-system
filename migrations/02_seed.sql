@@ -7,13 +7,14 @@ SET NAMES utf8mb4;
 -- Şirkətlər
 -- --------------------------------------------------------
 INSERT INTO companies (name, is_holding, tax_id, address) VALUES
-('Azman Holding', TRUE, '1701234567', 'Baku, Azerbaijan'),
-('Azman Construction', FALSE, '1702345678', 'Baku, Azerbaijan'),
+('Azman Holding', TRUE, '1701234567', 'Səbail r., Hacıbabayevlər küçəsi 4, Bakı, Azərbaycan'),
+('Azman Construction', FALSE, '1702345678', 'Baku, Azerbaijan - 16 il təcrübə, ictimai bina və parkların tikintisi'),
 ('TEZ Logistics', FALSE, '1703456789', 'Baku, Azerbaijan'),
 ('Sapphire Hotels Group', FALSE, '1704567890', 'Baku, Azerbaijan'),
 ('City Service Company', FALSE, '1705678901', 'Baku, Azerbaijan'),
-('EcoProd Azerbaijan', FALSE, '1706789012', 'Baku, Azerbaijan'),
-('Mangal MMC', FALSE, '1707890123', 'Baku, Azerbaijan');
+('EcoProd Azerbaijan', FALSE, '1706789012', 'Baku, Azerbaijan - Kənd təsərrüfatı və emalat'),
+('Mangal MMC', FALSE, '1707890123', 'Baku, Azerbaijan'),
+('Judo Club 2012', FALSE, '1708901234', 'Bakı, Azərbaycan');
 
 -- --------------------------------------------------------
 -- Departamentlər
@@ -30,7 +31,9 @@ INSERT INTO departments (company_id, name) VALUES
 -- EcoProd Azerbaijan (6)
 (6, 'İnzibati'), (6, 'İstehsalat'), (6, 'Kənd Təsərrüfatı'), (6, 'Keyfiyyət'), (6, 'Satış'), (6, 'HR'),
 -- Mangal MMC (7)
-(7, 'İnzibati'), (7, 'İstehsalat'), (7, 'Texniki'), (7, 'Satış'), (7, 'HR'), (7, 'Logistika');
+(7, 'İnzibati'), (7, 'İstehsalat'), (7, 'Texniki'), (7, 'Satış'), (7, 'HR'), (7, 'Logistika'),
+-- Judo Club 2012 (8)
+(8, 'İdman Sektoru'), (8, 'İnzibati'), (8, 'Təşkilatlar');
 
 -- --------------------------------------------------------
 -- Vəzifələr
@@ -47,7 +50,9 @@ INSERT INTO positions (company_id, name) VALUES
 -- EcoProd Azerbaijan (6)
 (6, 'İstehsalat Meneceri'), (6, 'Aqronom'), (6, 'Fermer'), (6, 'Keyfiyyət Mütəxəssisi'), (6, 'Satış Meneceri'), (6, 'HR Meneceri'),
 -- Mangal MMC (7)
-(7, 'İstehsalat Rəhbəri'), (7, 'Operator'), (7, 'Texnik'), (7, 'Satış Meneceri'), (7, 'HR Meneceri'), (7, 'Sürücü');
+(7, 'İstehsalat Rəhbəri'), (7, 'Operator'), (7, 'Texnik'), (7, 'Satış Meneceri'), (7, 'HR Meneceri'), (7, 'Sürücü'),
+-- Judo Club 2012 (8)
+(8, 'Baş Trener'), (8, 'Trenyor'), (8, 'İdmançı'), (8, 'Klub Meneceri'), (8, 'Tədbir Təşkilatçısı');
 
 -- --------------------------------------------------------
 -- Demo işçilər (14 nəfər)

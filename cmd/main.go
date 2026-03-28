@@ -289,6 +289,9 @@ func seedUsers(userRepo *repository.UserRepository, companyRepo *repository.Comp
                 {"Lojistika HR", "hr@tezlogistics.az", models.RoleSubsidiaryHR, intPtr(3)},
                 {"Hotel HR", "hr@sapphirehotels.az", models.RoleSubsidiaryHR, intPtr(4)},
                 {"City Service HR", "hr@cityservice.az", models.RoleSubsidiaryHR, intPtr(5)},
+		{"EcoProd HR", "hr@ecoprod.az", models.RoleSubsidiaryHR, intPtr(6)},
+		{"Mangal HR", "hr@mangalmmc.az", models.RoleSubsidiaryHR, intPtr(7)},
+		{"Judo Club HR", "hr@judoclub.az", models.RoleSubsidiaryHR, intPtr(8)},
         }
 
         for _, u := range users {
