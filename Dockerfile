@@ -1,33 +1,37 @@
 # Build stage
 FROM golang:1.21-alpine AS builder
 
-# Disable checksum verification globally BEFORE any go command
+# Disable checksum verification - CRITICAL: must be set BEFORE any go command
 ENV GOSUMDB=off
-ENV GOPROXY=direct
 
 WORKDIR /app
 
 # Install system dependencies
 RUN apk add --no-cache git ca-certificates tzdata
 
-# Copy go.mod only
+# Copy go.mod only (go.sum is excluded via .dockerignore)
 COPY go.mod ./
 
 # Download dependencies
 RUN go mod download
 
-# Copy all source code
-COPY . .
+# Copy source code (go.sum excluded via .dockerignore)
+COPY cmd ./cmd
+COPY config ./config
+COPY internal ./internal
+COPY templates ./templates
+COPY static ./static
+COPY migrations ./migrations
 
-# Build the binary
+# Build
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /hr-system ./cmd/main.go
 
-# Final stage
+# Runtime stage
 FROM alpine:3.19
 
 WORKDIR /app
 
-# Install runtime dependencies including curl for healthcheck
+# Install runtime deps (curl for healthcheck)
 RUN apk --no-cache add ca-certificates tzdata curl
 
 # Copy binary

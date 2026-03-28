@@ -2,6 +2,9 @@
 .git
 .gitignore
 
+# Go sum file (will be generated during build)
+go.sum
+
 # Documentation
 README.md
 *.md
@@ -12,6 +15,7 @@ README.md
 
 # Test files
 *_test.go
+tests/
 
 # Temporary files
 *.tmp
