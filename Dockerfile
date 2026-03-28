@@ -9,8 +9,12 @@ RUN apk add --no-cache git ca-certificates tzdata
 # Copy only go.mod (not go.sum to avoid checksum issues)
 COPY go.mod ./
 
-# Download dependencies without checksum verification
-RUN GOSUMDB=off go mod download
+# Disable checksum verification for this build
+ENV GOSUMDB=off
+ENV GOPROXY=direct
+
+# Download dependencies
+RUN go mod download
 
 # Copy source code
 COPY . .
