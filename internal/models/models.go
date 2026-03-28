@@ -85,6 +85,8 @@ type Employee struct {
         Status           EmployeeStatus `json:"status" db:"status"`
         DepartmentID     *int           `json:"department_id" db:"department_id"`
         PositionID       *int           `json:"position_id" db:"position_id"`
+	WorkLocationID   *int           `json:"work_location_id" db:"work_location_id"`
+	UniformSize     string         `json:"uniform_size" db:"uniform_size"`
         HireDate         *time.Time     `json:"hire_date" db:"hire_date"`
         TerminationDate  *time.Time     `json:"termination_date" db:"termination_date"`
         TerminationReason string        `json:"termination_reason" db:"termination_reason"`
@@ -94,7 +96,8 @@ type Employee struct {
         // Əlaqəli məlumatlar
         CompanyName    string `json:"company_name" db:"company_name"`
         DepartmentName string `json:"department_name" db:"department_name"`
-        PositionName   string `json:"position_name" db:"position_name"`
+        PositionName     string `json:"position_name" db:"position_name"`
+	WorkLocationName string `json:"work_location_name" db:"work_location_name"`
 }
 
 // EmployeeEducation - Təhsil
@@ -148,6 +151,7 @@ type EmployeeFull struct {
         Experience  []EmployeeExperience  `json:"experience"`
         Family      []EmployeeFamily      `json:"family"`
         Lifecycle   []EmployeeLifecycleLog `json:"lifecycle"`
+	Certificates []EmployeeCertificate `json:"certificates"`
 }
 
 // DashboardStats - Dashboard statistikası
@@ -168,4 +172,30 @@ type Claims struct {
         Email     string `json:"email"`
         Role      Role   `json:"role"`
         jwt.RegisteredClaims
+}
+
+// WorkLocation - İş yeri
+type WorkLocation struct {
+	ID        int       `json:"id" db:"id"`
+	CompanyID int       `json:"company_id" db:"company_id"`
+	Name      string    `json:"name" db:"name"`
+	Address   string    `json:"address" db:"address"`
+	Type      string    `json:"type" db:"type"`
+	IsActive  bool      `json:"is_active" db:"is_active"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+}
+
+// EmployeeCertificate - İşçi sertifikatı
+type EmployeeCertificate struct {
+	ID               int        `json:"id" db:"id"`
+	EmployeeID       int        `json:"employee_id" db:"employee_id"`
+	CertificateType  string     `json:"certificate_type" db:"certificate_type"`
+	CertificateNumber string    `json:"certificate_number" db:"certificate_number"`
+	IssuedBy         string     `json:"issued_by" db:"issued_by"`
+	IssueDate        *time.Time `json:"issue_date" db:"issue_date"`
+	ExpiryDate       *time.Time `json:"expiry_date" db:"expiry_date"`
+	Status           string     `json:"status" db:"status"`
+	Notes            string     `json:"notes" db:"notes"`
+	CreatedAt        time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at" db:"updated_at"`
 }

@@ -15,6 +15,7 @@ type PageData struct {
         Experience       []models.EmployeeExperience
         Family           []models.EmployeeFamily
         Lifecycle        []models.EmployeeLifecycleLog
+	Certificates     []models.EmployeeCertificate
         Companies        []models.Company
         Users            []models.User
         Departments      []models.Department

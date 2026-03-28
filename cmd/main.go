@@ -97,6 +97,12 @@ func main() {
         mux.HandleFunc("/api/departments", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetDepartmentsByCompany))
         mux.HandleFunc("/api/positions", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetPositionsByCompany))
 
+	// Sertifikat route-ları
+	mux.HandleFunc("/employee/certificate/add", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.AddCertificate))
+	mux.HandleFunc("/employee/certificate/update", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.UpdateCertificate))
+	mux.HandleFunc("/employee/certificate/delete", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.DeleteCertificate))
+	mux.HandleFunc("/api/work-locations", middleware.AuthMiddleware(cfg.JWTSecret, employeeHandler.GetWorkLocations))
+
         // Struktur route-ları
         mux.HandleFunc("/structure", middleware.AuthMiddleware(cfg.JWTSecret, companyHandler.ShowStructure))
         mux.HandleFunc("/structure/company", middleware.AuthMiddleware(cfg.JWTSecret, companyHandler.ShowCompanyStructure))
@@ -277,10 +283,12 @@ func seedUsers(userRepo *repository.UserRepository, companyRepo *repository.Comp
                 Role     models.Role
                 CompanyID *int
         }{
-                {"Sistem Admin", "admin@abcholding.az", models.RoleAdmin, nil},
-                {"Holding HR", "holding.hr@abcholding.az", models.RoleHoldingHR, intPtr(1)},
-                {"Tekstil HR", "hr@abctekstil.az", models.RoleSubsidiaryHR, intPtr(2)},
-                {"Logistika HR", "hr@abclogistika.az", models.RoleSubsidiaryHR, intPtr(3)},
+                {"Sistem Admin", "admin@azmanholding.az", models.RoleAdmin, nil},
+                {"Holding HR", "holding.hr@azmanholding.az", models.RoleHoldingHR, intPtr(1)},
+                {"Tikinti HR", "hr@azmanconstruction.az", models.RoleSubsidiaryHR, intPtr(2)},
+                {"Lojistika HR", "hr@tezlogistics.az", models.RoleSubsidiaryHR, intPtr(3)},
+                {"Hotel HR", "hr@sapphirehotels.az", models.RoleSubsidiaryHR, intPtr(4)},
+                {"City Service HR", "hr@cityservice.az", models.RoleSubsidiaryHR, intPtr(5)},
         }
 
         for _, u := range users {

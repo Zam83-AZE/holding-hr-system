@@ -122,6 +122,7 @@ func (h *EmployeeHandler) ShowEmployeeCard(w http.ResponseWriter, r *http.Reques
         experience, _ := h.employeeRepo.GetExperience(id)
         family, _ := h.employeeRepo.GetFamily(id)
         lifecycle, _ := h.employeeRepo.GetLifecycleLogs(id)
+	certificates, _ := h.employeeRepo.GetCertificatesByEmployee(id)
 
         // Departament və vəzifələri gətir
         departments, _ := h.deptRepo.GetByCompanyID(employee.CompanyID)
@@ -135,6 +136,7 @@ func (h *EmployeeHandler) ShowEmployeeCard(w http.ResponseWriter, r *http.Reques
                 Experience:  experience,
                 Family:      family,
                 Lifecycle:   lifecycle,
+		Certificates: certificates,
                 Departments: departments,
                 Positions:   positions,
         }
@@ -687,4 +689,91 @@ func (h *EmployeeHandler) GetPositionsByCompany(w http.ResponseWriter, r *http.R
                 fmt.Fprintf(w, `{"id":%d,"name":"%s"}`, pos.ID, template.HTMLEscapeString(pos.Name))
         }
         fmt.Fprintf(w, "]")
+}
+
+// AddCertificate - Sertifikat əlavə et
+func (h *EmployeeHandler) AddCertificate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	employeeID, _ := strconv.Atoi(r.FormValue("employee_id"))
+	cert := &models.EmployeeCertificate{
+		EmployeeID:       employeeID,
+		CertificateType:  r.FormValue("certificate_type"),
+		CertificateNumber: r.FormValue("certificate_number"),
+		IssuedBy:         r.FormValue("issued_by"),
+		Notes:            r.FormValue("notes"),
+	}
+	if d := r.FormValue("issue_date"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		cert.IssueDate = &t
+	}
+	if d := r.FormValue("expiry_date"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		cert.ExpiryDate = &t
+	}
+	h.employeeRepo.AddCertificate(cert)
+	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d", employeeID), http.StatusSeeOther)
+}
+
+// UpdateCertificate - Sertifikat yenilə
+func (h *EmployeeHandler) UpdateCertificate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	id, _ := strconv.Atoi(r.FormValue("id"))
+	employeeID, _ := strconv.Atoi(r.FormValue("employee_id"))
+	cert, _ := h.employeeRepo.GetCertificateByID(id)
+	if cert == nil {
+		http.Error(w, "Certificate not found", http.StatusNotFound)
+		return
+	}
+	cert.CertificateType = r.FormValue("certificate_type")
+	cert.CertificateNumber = r.FormValue("certificate_number")
+	cert.IssuedBy = r.FormValue("issued_by")
+	cert.Notes = r.FormValue("notes")
+	if d := r.FormValue("issue_date"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		cert.IssueDate = &t
+	}
+	if d := r.FormValue("expiry_date"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		cert.ExpiryDate = &t
+	}
+	h.employeeRepo.UpdateCertificate(cert)
+	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d", employeeID), http.StatusSeeOther)
+}
+
+// DeleteCertificate - Sertifikat sil
+func (h *EmployeeHandler) DeleteCertificate(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	id, _ := strconv.Atoi(r.FormValue("id"))
+	employeeID, _ := strconv.Atoi(r.FormValue("employee_id"))
+	h.employeeRepo.DeleteCertificate(id)
+	http.Redirect(w, r, fmt.Sprintf("/employee/card?id=%d", employeeID), http.StatusSeeOther)
+}
+
+// GetWorkLocations - API: İş yerlərini JSON kimi qaytar
+func (h *EmployeeHandler) GetWorkLocations(w http.ResponseWriter, r *http.Request) {
+	companyID, _ := strconv.Atoi(r.URL.Query().Get("company_id"))
+	locations, err := h.employeeRepo.GetWorkLocationsByCompany(companyID)
+	if err != nil {
+		http.Error(w, "Error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	result := "["
+	for i, loc := range locations {
+		if i > 0 {
+			result += ","
+		}
+		result += fmt.Sprintf(`{"id":%d,"name":"%s","type":"%s"}`, loc.ID, loc.Name, loc.Type)
+	}
+	result += "]"
+	w.Write([]byte(result))
 }
