@@ -74,8 +74,9 @@ services:
         git config --global --add safe.directory /app &&
         git config --global user.email 'test@holding-hr.local' &&
         git config --global user.name 'Test Runner' &&
+        git remote set-url origin https://${GITHUB_TOKEN}@github.com/Zam83-AZE/holding-hr-system.git &&
         git add test-results/ &&
-        git diff --staged --quiet || (git commit -m 'Test results - $(date +%Y-%m-%d_%H-%M-%S)' && git push https://$${GITHUB_TOKEN}@github.com/Zam83-AZE/holding-hr-system.git main) &&
+        git diff --staged --quiet || (git commit -m 'Test results - $(date +%Y-%m-%d_%H-%M-%S)' && git push origin main) &&
         echo 'Done!'
       "
     networks:
