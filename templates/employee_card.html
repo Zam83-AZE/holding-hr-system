@@ -3,271 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İşçi Kartoçkası | Holding HR System</title>
+    <title>İşçi Kartoçkası | Holding HR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-blue-900 text-white flex-shrink-0 flex flex-col">
-            <div class="p-4 border-b border-blue-800">
-                <h1 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-building mr-2"></i>Holding HR
-                </h1>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <a href="/" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
-                    <i class="fas fa-home w-5 mr-3"></i>Dashboard
-                </a>
-                <a href="/employees" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition bg-blue-800">
-                    <i class="fas fa-users w-5 mr-3"></i>Kadr Uçotu
-                </a>
-                <a href="/structure" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
-                    <i class="fas fa-sitemap w-5 mr-3"></i>Struktur
-                </a>
-                {{if eq .User.Role "ADMIN"}}
-                <a href="/settings" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
-                    <i class="fas fa-cog w-5 mr-3"></i>Ayarlar
-                </a>
-                {{end}}
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        <div class="w-64 bg-blue-900 text-white p-4 flex-shrink-0">
+            <h1 class="text-xl font-bold mb-6"><i class="fas fa-building mr-2"></i>Holding HR</h1>
+            <nav class="space-y-2">
+                <a href="/" class="block px-4 py-2 rounded hover:bg-blue-800">Dashboard</a>
+                <a href="/employees" class="block px-4 py-2 rounded hover:bg-blue-800">Kadr Uçotu</a>
+                <a href="/structure" class="block px-4 py-2 rounded hover:bg-blue-800">Struktur</a>
             </nav>
-            <div class="p-4 border-t border-blue-800">
-                <p class="text-sm font-medium">{{.User.Email}}</p>
-                <a href="/auth/logout" class="text-sm text-blue-300 hover:text-white mt-2 block"><i class="fas fa-sign-out-alt mr-2"></i>Çıxış</a>
-            </div>
-        </aside>
+        </div>
         
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white shadow-sm px-6 py-4">
-                <a href="/employees?status={{.Employee.Status}}" class="text-gray-600 hover:text-gray-800">
-                    <i class="fas fa-arrow-left mr-2"></i>Geri
-                </a>
-            </header>
+        <div class="flex-1 p-6 overflow-auto">
+            <a href="/employees?status={{.Employee.Status}}" class="text-gray-600 hover:text-gray-800 mb-4 inline-block">
+                <i class="fas fa-arrow-left mr-2"></i>Geri
+            </a>
             
-            <div class="p-6">
-                <!-- Employee Header -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
-                    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-8 text-white">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mr-6">
-                                    <i class="fas fa-user text-gray-300 text-4xl"></i>
-                                </div>
-                                <div>
-                                    <h1 class="text-2xl font-bold">{{.Employee.FirstName}} {{.Employee.LastName}}</h1>
-                                    <p class="text-blue-200">{{.Employee.FatherName}}</p>
-                                    <p class="text-blue-200 mt-1">{{.Employee.PositionName}} - {{.Employee.DepartmentName}}</p>
-                                    <span class="inline-block mt-2 px-3 py-1 text-xs rounded-full {{.Employee.Status | statusBadgeClass}}">
-                                        {{.Employee.Status | statusLabel}}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex space-x-2">
-                                {{if eq .Employee.Status "CANDIDATE"}}
-                                <button onclick="document.getElementById('hireModal').classList.remove('hidden')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition">
-                                    <i class="fas fa-check mr-2"></i>İşə Qəbul Et
-                                </button>
-                                {{end}}
-                                {{if eq .Employee.Status "ACTIVE"}}
-                                <button onclick="document.getElementById('terminateModal').classList.remove('hidden')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
-                                    <i class="fas fa-times mr-2"></i>Hitam Ver
-                                </button>
-                                {{end}}
-                                {{if eq .Employee.Status "TERMINATED"}}
-                                <form action="/employee/reactivate" method="POST">
-                                    <input type="hidden" name="id" value="{{.Employee.ID}}">
-                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
-                                        <i class="fas fa-redo mr-2"></i>Bərpa Et
-                                    </button>
-                                </form>
-                                {{end}}
-                            </div>
+            <!-- Employee Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg p-6 text-white mb-6">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-gray-300 text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">{{.Employee.FirstName}} {{.Employee.LastName}}</h1>
+                            <p class="text-blue-200">{{.Employee.FatherName}}</p>
+                            <p class="text-blue-200 text-sm">{{.Employee.PositionName}} | {{.Employee.DepartmentName}}</p>
+                            <span class="inline-block mt-2 px-3 py-1 text-xs rounded-full 
+                                {{if eq .Employee.Status "ACTIVE"}}bg-green-500
+                                {{else if eq .Employee.Status "CANDIDATE"}}bg-yellow-500
+                                {{else}}bg-red-500{{end}}">
+                                {{if eq .Employee.Status "ACTIVE"}}Cari İşçi
+                                {{else if eq .Employee.Status "CANDIDATE"}}Namizəd
+                                {{else}}İşdən Çıxan{{end}}
+                            </span>
                         </div>
                     </div>
                     
-                    <!-- Tabs -->
-                    <div class="border-b">
-                        <nav class="flex">
-                            <button onclick="showTab('personal')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-blue-500 text-blue-600">Şəxsi Məlumatlar</button>
-                            <button onclick="showTab('education')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Təhsil</button>
-                            <button onclick="showTab('experience')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">İş Təcrübəsi</button>
-                            <button onclick="showTab('family')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Ailə</button>
-                            <button onclick="showTab('history')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">Tarixçə</button>
-                        </nav>
-                    </div>
-                    
-                    <!-- Tab Content -->
-                    <div class="p-6">
-                        <!-- Personal Tab -->
-                        <div id="personal-tab" class="tab-content">
-                            <form action="/employee/update" method="POST">
-                                <input type="hidden" name="id" value="{{.Employee.ID}}">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ad *</label>
-                                        <input type="text" name="first_name" value="{{.Employee.FirstName}}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Soyad *</label>
-                                        <input type="text" name="last_name" value="{{.Employee.LastName}}" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ata adı</label>
-                                        <input type="text" name="father_name" value="{{.Employee.FatherName}}" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">FİN Kod *</label>
-                                        <input type="text" name="fin_code" value="{{.Employee.FINCode}}" required maxlength="7" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Doğum tarixi</label>
-                                        <input type="date" name="birth_date" value="{{.Employee.BirthDate | formatDateInput}}" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Cins</label>
-                                        <select name="gender" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                            <option value="">Seçin</option>
-                                            <option value="MALE" {{if eq .Employee.Gender "MALE"}}selected{{end}}>Kişi</option>
-                                            <option value="FEMALE" {{if eq .Employee.Gender "FEMALE"}}selected{{end}}>Qadın</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
-                                        <input type="text" name="phone" value="{{.Employee.Phone}}" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                        <input type="email" name="email" value="{{.Employee.Email}}" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Ünvan</label>
-                                        <input type="text" name="address" value="{{.Employee.Address}}" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    </div>
-                                </div>
-                                <div class="mt-6 flex justify-end">
-                                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                                        <i class="fas fa-save mr-2"></i>Yadda Saxla
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        
-                        <!-- Education Tab -->
-                        <div id="education-tab" class="tab-content hidden">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold">Təhsil Məlumatları</h3>
-                                <button onclick="document.getElementById('educationModal').classList.remove('hidden')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                                    <i class="fas fa-plus mr-2"></i>Əlavə Et
-                                </button>
-                            </div>
-                            <div class="space-y-4">
-                                {{range .Education}}
-                                <div class="border rounded-lg p-4">
-                                    <h4 class="font-medium">{{.Institution}}</h4>
-                                    <p class="text-sm text-gray-500">{{.Specialty}} - {{.Degree | degreeLabel}}</p>
-                                    <p class="text-sm text-gray-400">{{.StartYear}} - {{.EndYear}}</p>
-                                </div>
-                                {{else}}
-                                <p class="text-gray-500 text-center py-8">Təhsil məlumatı yoxdur</p>
-                                {{end}}
-                            </div>
-                        </div>
-                        
-                        <!-- Experience Tab -->
-                        <div id="experience-tab" class="tab-content hidden">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold">İş Təcrübəsi</h3>
-                                <button onclick="document.getElementById('experienceModal').classList.remove('hidden')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                                    <i class="fas fa-plus mr-2"></i>Əlavə Et
-                                </button>
-                            </div>
-                            <div class="space-y-4">
-                                {{range .Experience}}
-                                <div class="border rounded-lg p-4">
-                                    <h4 class="font-medium">{{.CompanyName}}</h4>
-                                    <p class="text-sm text-gray-500">{{.Position}}</p>
-                                    <p class="text-sm text-gray-400">{{.StartDate | formatDate}} - {{.EndDate | formatDate}}</p>
-                                </div>
-                                {{else}}
-                                <p class="text-gray-500 text-center py-8">İş təcrübəsi yoxdur</p>
-                                {{end}}
-                            </div>
-                        </div>
-                        
-                        <!-- Family Tab -->
-                        <div id="family-tab" class="tab-content hidden">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-semibold">Ailə Məlumatları</h3>
-                                <button onclick="document.getElementById('familyModal').classList.remove('hidden')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                                    <i class="fas fa-plus mr-2"></i>Əlavə Et
-                                </button>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {{range .Family}}
-                                <div class="border rounded-lg p-4 flex items-center">
-                                    <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                                        <i class="fas fa-user text-gray-400"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-medium">{{.FullName}}</h4>
-                                        <p class="text-sm text-gray-500">{{.RelationType | relationLabel}}</p>
-                                    </div>
-                                </div>
-                                {{else}}
-                                <p class="text-gray-500 text-center py-8 col-span-2">Ailə məlumatı yoxdur</p>
-                                {{end}}
-                            </div>
-                        </div>
-                        
-                        <!-- History Tab -->
-                        <div id="history-tab" class="tab-content hidden">
-                            <h3 class="text-lg font-semibold mb-4">Yaşam Dövrü Tarixçəsi</h3>
-                            <div class="space-y-4">
-                                {{range .Lifecycle}}
-                                <div class="flex items-start">
-                                    <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-4"></div>
-                                    <div>
-                                        <p class="text-gray-800">{{.EventDescription}}</p>
-                                        <p class="text-sm text-gray-400">{{.CreatedAt.Format "02.01.2006 15:04"}}</p>
-                                    </div>
-                                </div>
-                                {{else}}
-                                <p class="text-gray-500 text-center py-8">Tarixçə yoxdur</p>
-                                {{end}}
-                            </div>
-                        </div>
+                    <div class="flex space-x-2">
+                        {{if eq .Employee.Status "CANDIDATE"}}
+                        <button onclick="document.getElementById('hireModal').classList.remove('hidden')" class="bg-green-500 px-4 py-2 rounded-lg">
+                            <i class="fas fa-check mr-2"></i>İşə Qəbul
+                        </button>
+                        {{end}}
+                        {{if eq .Employee.Status "ACTIVE"}}
+                        <button onclick="document.getElementById('terminateModal').classList.remove('hidden')" class="bg-red-500 px-4 py-2 rounded-lg">
+                            <i class="fas fa-times mr-2"></i>Hitam
+                        </button>
+                        {{end}}
+                        {{if eq .Employee.Status "TERMINATED"}}
+                        <form action="/employee/reactivate" method="POST">
+                            <input type="hidden" name="id" value="{{.Employee.ID}}">
+                            <button type="submit" class="bg-blue-500 px-4 py-2 rounded-lg"><i class="fas fa-redo mr-2"></i>Bərpa</button>
+                        </form>
+                        {{end}}
                     </div>
                 </div>
             </div>
-        </main>
+            
+            <!-- Tabs -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="border-b flex">
+                    <button onclick="showTab('personal')" class="px-6 py-3 border-b-2 border-blue-500 text-blue-600 font-medium tab-btn" data-tab="personal">Şəxsi</button>
+                    <button onclick="showTab('education')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="education">Təhsil</button>
+                    <button onclick="showTab('experience')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="experience">Təcrübə</button>
+                    <button onclick="showTab('family')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="family">Ailə</button>
+                    <button onclick="showTab('history')" class="px-6 py-3 text-gray-500 tab-btn" data-tab="history">Tarixçə</button>
+                </div>
+                
+                <!-- Personal Tab -->
+                <div id="personal-tab" class="p-6 tab-content">
+                    <form action="/employee/update" method="POST">
+                        <input type="hidden" name="id" value="{{.Employee.ID}}">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Ad</label>
+                                <input type="text" name="first_name" value="{{.Employee.FirstName}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Soyad</label>
+                                <input type="text" name="last_name" value="{{.Employee.LastName}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Ata adı</label>
+                                <input type="text" name="father_name" value="{{.Employee.FatherName}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">FİN</label>
+                                <input type="text" name="fin_code" value="{{.Employee.FINCode}}" class="w-full px-3 py-2 border rounded-lg uppercase">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Doğum tarixi</label>
+                                <input type="date" name="birth_date" value="{{.Employee.BirthDate | formatDateInput}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Cins</label>
+                                <select name="gender" class="w-full px-3 py-2 border rounded-lg">
+                                    <option value="">Seçin</option>
+                                    <option value="MALE" {{if eq .Employee.Gender "MALE"}}selected{{end}}>Kişi</option>
+                                    <option value="FEMALE" {{if eq .Employee.Gender "FEMALE"}}selected{{end}}>Qadın</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Telefon</label>
+                                <input type="text" name="phone" value="{{.Employee.Phone}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Email</label>
+                                <input type="email" name="email" value="{{.Employee.Email}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Ünvan</label>
+                                <input type="text" name="address" value="{{.Employee.Address}}" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                                <i class="fas fa-save mr-2"></i>Yadda Saxla
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Education Tab -->
+                <div id="education-tab" class="p-6 tab-content hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold">Təhsil</h3>
+                        <button onclick="document.getElementById('eduModal').classList.remove('hidden')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
+                    </div>
+                    <div class="space-y-3">
+                        {{range .Education}}
+                        <div class="border rounded-lg p-4">
+                            <p class="font-medium">{{.Institution}}</p>
+                            <p class="text-sm text-gray-500">{{.Specialty}} | {{.Degree}}</p>
+                            <p class="text-sm text-gray-400">{{.StartYear}} - {{.EndYear}}</p>
+                        </div>
+                        {{else}}
+                        <p class="text-gray-400 text-center py-4">Məlumat yoxdur</p>
+                        {{end}}
+                    </div>
+                </div>
+                
+                <!-- Experience Tab -->
+                <div id="experience-tab" class="p-6 tab-content hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold">İş Təcrübəsi</h3>
+                        <button onclick="document.getElementById('expModal').classList.remove('hidden')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
+                    </div>
+                    <div class="space-y-3">
+                        {{range .Experience}}
+                        <div class="border rounded-lg p-4">
+                            <p class="font-medium">{{.CompanyName}}</p>
+                            <p class="text-sm text-gray-500">{{.Position}}</p>
+                            <p class="text-sm text-gray-400">{{.StartDate | formatDate}} - {{.EndDate | formatDate}}</p>
+                        </div>
+                        {{else}}
+                        <p class="text-gray-400 text-center py-4">Məlumat yoxdur</p>
+                        {{end}}
+                    </div>
+                </div>
+                
+                <!-- Family Tab -->
+                <div id="family-tab" class="p-6 tab-content hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold">Ailə Məlumatları</h3>
+                        <button onclick="document.getElementById('famModal').classList.remove('hidden')" class="text-blue-600"><i class="fas fa-plus mr-2"></i>Əlavə Et</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        {{range .Family}}
+                        <div class="border rounded-lg p-4">
+                            <p class="font-medium">{{.FullName}}</p>
+                            <p class="text-sm text-gray-500">{{if eq .RelationType "FATHER"}}Ata{{else if eq .RelationType "MOTHER"}}Ana{{else if eq .RelationType "SPOUSE"}}Həyat yoldaşı{{else}}Övlad{{end}}</p>
+                            <p class="text-sm text-gray-400">{{.ContactNumber}}</p>
+                        </div>
+                        {{else}}
+                        <p class="text-gray-400 text-center py-4 col-span-2">Məlumat yoxdur</p>
+                        {{end}}
+                    </div>
+                </div>
+                
+                <!-- History Tab -->
+                <div id="history-tab" class="p-6 tab-content hidden">
+                    <h3 class="font-semibold mb-4">Tarixçə</h3>
+                    <div class="space-y-4">
+                        {{range .Lifecycle}}
+                        <div class="flex items-start">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-4"></div>
+                            <div>
+                                <p class="text-gray-800">{{.EventDescription}}</p>
+                                <p class="text-sm text-gray-400">{{.CreatedAt.Format "02.01.2006 15:04"}}</p>
+                            </div>
+                        </div>
+                        {{else}}
+                        <p class="text-gray-400 text-center py-4">Tarixçə yoxdur</p>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- Hire Modal -->
-    <div id="hireModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <div id="hireModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 class="text-lg font-semibold mb-4">İşə Qəbul</h3>
             <form action="/employee/hire" method="POST">
                 <input type="hidden" name="id" value="{{.Employee.ID}}">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Vəzifə</label>
-                        <select name="position_id" class="w-full px-4 py-2 border rounded-lg" required>
+                        <label class="block text-sm font-medium mb-1">Vəzifə</label>
+                        <select name="position_id" class="w-full px-3 py-2 border rounded-lg" required>
                             <option value="">Seçin</option>
                             {{range .Positions}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Departament</label>
-                        <select name="department_id" class="w-full px-4 py-2 border rounded-lg" required>
+                        <label class="block text-sm font-medium mb-1">Departament</label>
+                        <select name="department_id" class="w-full px-3 py-2 border rounded-lg" required>
                             <option value="">Seçin</option>
                             {{range .Departments}}<option value="{{.ID}}">{{.Name}}</option>{{end}}
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">İşə qəbul tarixi</label>
-                        <input type="date" name="hire_date" class="w-full px-4 py-2 border rounded-lg" required>
+                        <label class="block text-sm font-medium mb-1">Tarix</label>
+                        <input type="date" name="hire_date" class="w-full px-3 py-2 border rounded-lg" required>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
@@ -279,132 +243,57 @@
     </div>
     
     <!-- Terminate Modal -->
-    <div id="terminateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <div id="terminateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 class="text-lg font-semibold mb-4">İşdən Çıxarma</h3>
             <form action="/employee/terminate" method="POST">
                 <input type="hidden" name="id" value="{{.Employee.ID}}">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Çıxma tarixi</label>
-                        <input type="date" name="termination_date" class="w-full px-4 py-2 border rounded-lg" required>
+                        <label class="block text-sm font-medium mb-1">Tarix</label>
+                        <input type="date" name="termination_date" class="w-full px-3 py-2 border rounded-lg" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Səbəb</label>
-                        <textarea name="termination_reason" rows="3" class="w-full px-4 py-2 border rounded-lg" required></textarea>
+                        <label class="block text-sm font-medium mb-1">Səbəb</label>
+                        <textarea name="termination_reason" rows="3" class="w-full px-3 py-2 border rounded-lg" required></textarea>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="document.getElementById('terminateModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg">Hitam Ver</button>
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-lg">Təsdiqlə</button>
                 </div>
             </form>
         </div>
     </div>
     
     <!-- Education Modal -->
-    <div id="educationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <div id="eduModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 class="text-lg font-semibold mb-4">Təhsil Əlavə Et</h3>
             <form action="/employee/education/add" method="POST">
                 <input type="hidden" name="employee_id" value="{{.Employee.ID}}">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Müəssisə</label>
-                        <input type="text" name="institution" class="w-full px-4 py-2 border rounded-lg" required>
+                        <label class="block text-sm font-medium mb-1">Müəssisə</label>
+                        <input type="text" name="institution" class="w-full px-3 py-2 border rounded-lg" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">İxtisas</label>
-                        <input type="text" name="specialty" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Dərəcə</label>
-                        <select name="degree" class="w-full px-4 py-2 border rounded-lg">
-                            <option value="BACHELOR">Bakalavr</option>
-                            <option value="MASTER">Magistr</option>
-                            <option value="PHD">PhD</option>
-                        </select>
+                        <label class="block text-sm font-medium mb-1">İxtisas</label>
+                        <input type="text" name="specialty" class="w-full px-3 py-2 border rounded-lg">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Başlama</label>
-                            <input type="number" name="start_year" class="w-full px-4 py-2 border rounded-lg">
+                            <label class="block text-sm font-medium mb-1">Başlama</label>
+                            <input type="number" name="start_year" class="w-full px-3 py-2 border rounded-lg">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Bitmə</label>
-                            <input type="number" name="end_year" class="w-full px-4 py-2 border rounded-lg">
+                            <label class="block text-sm font-medium mb-1">Bitmə</label>
+                            <input type="number" name="end_year" class="w-full px-3 py-2 border rounded-lg">
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('educationModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Experience Modal -->
-    <div id="experienceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-semibold mb-4">İş Təcrübəsi Əlavə Et</h3>
-            <form action="/employee/experience/add" method="POST">
-                <input type="hidden" name="employee_id" value="{{.Employee.ID}}">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Şirkət</label>
-                        <input type="text" name="company_name" class="w-full px-4 py-2 border rounded-lg" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Vəzifə</label>
-                        <input type="text" name="position" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Başlama</label>
-                            <input type="date" name="start_date" class="w-full px-4 py-2 border rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Çıxma</label>
-                            <input type="date" name="end_date" class="w-full px-4 py-2 border rounded-lg">
-                        </div>
-                    </div>
-                </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('experienceModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Family Modal -->
-    <div id="familyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-semibold mb-4">Ailə Üzvü Əlavə Et</h3>
-            <form action="/employee/family/add" method="POST">
-                <input type="hidden" name="employee_id" value="{{.Employee.ID}}">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Qohumluq</label>
-                        <select name="relation_type" class="w-full px-4 py-2 border rounded-lg" required>
-                            <option value="FATHER">Ata</option>
-                            <option value="MOTHER">Ana</option>
-                            <option value="SPOUSE">Həyat yoldaşı</option>
-                            <option value="CHILD">Övlad</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
-                        <input type="text" name="full_name" class="w-full px-4 py-2 border rounded-lg" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Əlaqə</label>
-                        <input type="text" name="contact_number" class="w-full px-4 py-2 border rounded-lg">
-                    </div>
-                </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="document.getElementById('familyModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
+                    <button type="button" onclick="document.getElementById('eduModal').classList.add('hidden')" class="px-4 py-2 border rounded-lg">İmtina</button>
                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Əlavə Et</button>
                 </div>
             </form>
@@ -412,15 +301,15 @@
     </div>
     
     <script>
-    function showTab(name) {
+    function showTab(tab) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(el => {
-            el.classList.remove('border-blue-500', 'text-blue-600');
-            el.classList.add('border-transparent', 'text-gray-500');
+        document.getElementById(tab + '-tab').classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
+            btn.classList.add('text-gray-500');
         });
-        document.getElementById(name + '-tab').classList.remove('hidden');
-        event.target.classList.add('border-blue-500', 'text-blue-600');
-        event.target.classList.remove('border-transparent', 'text-gray-500');
+        event.target.classList.add('border-b-2', 'border-blue-500', 'text-blue-600', 'font-medium');
+        event.target.classList.remove('text-gray-500');
     }
     </script>
 </body>

@@ -3,125 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}} | Holding HR System</title>
+    <title>Kadr Uçotu | Holding HR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="flex h-screen overflow-hidden">
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-blue-900 text-white flex-shrink-0 flex flex-col">
-            <div class="p-4 border-b border-blue-800">
-                <h1 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-building mr-2"></i>
-                    Holding HR
-                </h1>
-            </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <a href="/" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
-                    <i class="fas fa-home w-5 mr-3"></i>Dashboard
-                </a>
-                <a href="/employees" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition bg-blue-800">
-                    <i class="fas fa-users w-5 mr-3"></i>Kadr Uçotu
-                </a>
-                <a href="/structure" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
-                    <i class="fas fa-sitemap w-5 mr-3"></i>Struktur
-                </a>
+        <div class="w-64 bg-blue-900 text-white p-4 flex-shrink-0">
+            <h1 class="text-xl font-bold mb-6"><i class="fas fa-building mr-2"></i>Holding HR</h1>
+            <nav class="space-y-2">
+                <a href="/" class="block px-4 py-2 rounded hover:bg-blue-800">Dashboard</a>
+                <a href="/employees" class="block px-4 py-2 rounded bg-blue-800">Kadr Uçotu</a>
+                <a href="/structure" class="block px-4 py-2 rounded hover:bg-blue-800">Struktur</a>
                 {{if eq .User.Role "ADMIN"}}
-                <a href="/settings" class="sidebar-link flex items-center px-4 py-2 rounded hover:bg-blue-800 transition">
-                    <i class="fas fa-cog w-5 mr-3"></i>Ayarlar
-                </a>
+                <a href="/settings" class="block px-4 py-2 rounded hover:bg-blue-800">Ayarlar</a>
                 {{end}}
             </nav>
-            <div class="p-4 border-t border-blue-800">
-                <div class="text-sm">
-                    <p class="font-medium">{{.User.Email}}</p>
-                    <p class="text-blue-300 text-xs">{{.User.Role | roleLabel}}</p>
-                </div>
-                <a href="/auth/logout" class="mt-2 flex items-center text-sm text-blue-300 hover:text-white">
-                    <i class="fas fa-sign-out-alt mr-2"></i>Çıxış
-                </a>
-            </div>
-        </aside>
+        </div>
         
-        <main class="flex-1 overflow-y-auto">
-            <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800">{{.Title}}</h2>
-                <form action="/employee/search" method="GET" class="flex items-center">
-                    <input type="text" name="q" placeholder="Axtarış..." class="px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64">
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700"><i class="fas fa-search"></i></button>
-                </form>
-            </header>
-            
-            <div class="p-6">
+        <!-- Main Content -->
+        <div class="flex-1 p-6 overflow-auto">
+            <div class="mb-6">
                 <!-- Tabs -->
-                <div class="bg-white rounded-xl shadow-sm">
-                    <div class="border-b">
-                        <nav class="flex -mb-px">
-                            <a href="/employees?status=ACTIVE" class="px-6 py-4 text-sm font-medium border-b-2 {{if eq .Status "ACTIVE"}}border-green-500 text-green-600{{else}}border-transparent text-gray-500 hover:text-gray-700{{end}}">
-                                <i class="fas fa-user-check mr-2"></i>Cari Əməkdaşlar
-                            </a>
-                            <a href="/employees?status=CANDIDATE" class="px-6 py-4 text-sm font-medium border-b-2 {{if eq .Status "CANDIDATE"}}border-yellow-500 text-yellow-600{{else}}border-transparent text-gray-500 hover:text-gray-700{{end}}">
-                                <i class="fas fa-user-clock mr-2"></i>Yeni Namizədlər
-                            </a>
-                            <a href="/employees?status=TERMINATED" class="px-6 py-4 text-sm font-medium border-b-2 {{if eq .Status "TERMINATED"}}border-red-500 text-red-600{{else}}border-transparent text-gray-500 hover:text-gray-700{{end}}">
-                                <i class="fas fa-user-times mr-2"></i>İşdən Çıxanlar
-                            </a>
-                        </nav>
-                    </div>
-                    
-                    <div class="p-4 flex items-center justify-between">
-                        <div></div>
-                        <a href="/employee/new" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center">
-                            <i class="fas fa-plus mr-2"></i>Yeni Əlavə Et
-                        </a>
-                    </div>
-                    
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ad Soyad</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">FİN</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Şirkət</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vəzifə</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Əməliyyat</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                {{range .Employees}}
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="/employee/card?id={{.ID}}" class="text-blue-600 hover:text-blue-800 font-medium">
-                                            {{.FirstName}} {{.LastName}}
-                                        </a>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.FINCode}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.CompanyName}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{if .PositionName}}{{.PositionName}}{{else}}-{{end}}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 py-1 text-xs rounded-full {{.Status | statusBadgeClass}}">{{.Status | statusLabel}}</span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <a href="/employee/card?id={{.ID}}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i></a>
-                                    </td>
-                                </tr>
-                                {{else}}
-                                <tr>
-                                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
-                                        <i class="fas fa-inbox text-4xl mb-2 block"></i>
-                                        <p>Heç bir məlumat tapılmadı</p>
-                                    </td>
-                                </tr>
-                                {{end}}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="flex border-b mb-4">
+                    <a href="/employees?status=ACTIVE" class="px-6 py-3 {{if eq .Status "ACTIVE"}}border-b-2 border-green-500 text-green-600 font-medium{{else}}text-gray-500{{end}}">
+                        <i class="fas fa-user-check mr-2"></i>Cari İşçilər
+                    </a>
+                    <a href="/employees?status=CANDIDATE" class="px-6 py-3 {{if eq .Status "CANDIDATE"}}border-b-2 border-yellow-500 text-yellow-600 font-medium{{else}}text-gray-500{{end}}">
+                        <i class="fas fa-user-clock mr-2"></i>Namizədlər
+                    </a>
+                    <a href="/employees?status=TERMINATED" class="px-6 py-3 {{if eq .Status "TERMINATED"}}border-b-2 border-red-500 text-red-600 font-medium{{else}}text-gray-500{{end}}">
+                        <i class="fas fa-user-times mr-2"></i>İşdən Çıxanlar
+                    </a>
+                </div>
+                
+                <div class="flex justify-end">
+                    <a href="/employee/new" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-plus mr-2"></i>Yeni Əlavə Et
+                    </a>
                 </div>
             </div>
-        </main>
+            
+            <!-- Table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ad Soyad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">FİN</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Şirkət</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vəzifə</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Əməliyyat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {{range .Employees}}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <a href="/employee/card?id={{.ID}}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    {{.FirstName}} {{.LastName}}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 text-gray-500">{{.FINCode}}</td>
+                            <td class="px-6 py-4 text-gray-500">{{.CompanyName}}</td>
+                            <td class="px-6 py-4 text-gray-500">{{if .PositionName}}{{.PositionName}}{{else}}-{{end}}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 text-xs rounded-full 
+                                    {{if eq .Status "ACTIVE"}}bg-green-100 text-green-800
+                                    {{else if eq .Status "CANDIDATE"}}bg-yellow-100 text-yellow-800
+                                    {{else}}bg-red-100 text-red-800{{end}}">
+                                    {{if eq .Status "ACTIVE"}}Cari{{else if eq .Status "CANDIDATE"}}Namizəd{{else}}İşdən çıxan{{end}}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="/employee/card?id={{.ID}}" class="text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {{else}}
+                        <tr>
+                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                <i class="fas fa-inbox text-4xl mb-2 block"></i>
+                                <p>Məlumat tapılmadı</p>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 </html>
