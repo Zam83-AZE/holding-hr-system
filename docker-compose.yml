@@ -47,8 +47,32 @@ services:
     networks:
       - hr-network
 
+  test:
+    image: golang:1.21-alpine
+    container_name: holding-hr-test
+    environment:
+      - BASE_URL=http://app:8080
+      - REPORT_DIR=/app/test-results
+    depends_on:
+      - app
+    volumes:
+      - .:/app
+      - test-results:/app/test-results
+    working_dir: /app
+    command: >
+      sh -c "
+        apk add --no-cache curl bash &&
+        echo 'Waiting for app to start...' &&
+        sleep 15 &&
+        echo 'Running tests...' &&
+        go run tests/integration_test.go
+      "
+    networks:
+      - hr-network
+
 volumes:
   hr-mariadb-data:
+  test-results:
 
 networks:
   hr-network:

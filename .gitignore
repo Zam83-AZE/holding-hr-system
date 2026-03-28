@@ -39,3 +39,11 @@ Thumbs.db
 
 # Docker
 .docker/
+
+# Test results
+test-results/
+
+# Download folder (not part of project)
+download/
+holding-hr-system/
+*.zip
