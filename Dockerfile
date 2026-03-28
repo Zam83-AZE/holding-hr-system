@@ -26,8 +26,8 @@ FROM alpine:3.19
 
 WORKDIR /app
 
-# Install ca-certificates and timezone data
-RUN apk --no-cache add ca-certificates tzdata
+# Install ca-certificates, timezone data and curl (for healthcheck)
+RUN apk --no-cache add ca-certificates tzdata curl
 
 # Copy binary from builder
 COPY --from=builder /hr-system /app/hr-system
